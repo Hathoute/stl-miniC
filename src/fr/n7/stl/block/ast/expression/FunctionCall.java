@@ -12,6 +12,7 @@ import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
 /**
@@ -53,13 +54,13 @@ public class FunctionCall implements Expression {
 	 */
 	@Override
 	public String toString() {
-		String _result = ((this.function == null)?this.name:this.function) + "( ";
+		String _result = this.name + "(";
 		Iterator<Expression> _iter = this.arguments.iterator();
 		if (_iter.hasNext()) {
 			_result += _iter.next();
 		}
 		while (_iter.hasNext()) {
-			_result += " ," + _iter.next();
+			_result += ", " + _iter.next();
 		}
 		return  _result + ")";
 	}
@@ -117,7 +118,13 @@ public class FunctionCall implements Expression {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException( "Semantics getCode is undefined in FunctionCall.");
+		Fragment thisCode = _factory.createFragment();
+		int i = this.arguments.size() - 1;
+		for(; i >= 0; i--) {
+			thisCode.append(this.arguments.get(i).getCode(_factory));
+		}
+		thisCode.add(_factory.createCall(this.name, Register.LB));
+		return thisCode;
 	}
 
 }

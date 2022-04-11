@@ -90,7 +90,7 @@ public class Printer implements Instruction {
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment result = this.parameter.getCode(_factory);
 		result.add(TAMFactory.createOutSubroutine(cachedType));
-		result.addComment("print");
+		//result.addComment("print");
 		return result;
 	}
 

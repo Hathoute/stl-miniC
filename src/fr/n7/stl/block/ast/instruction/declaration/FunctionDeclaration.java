@@ -111,8 +111,11 @@ public class FunctionDeclaration implements Instruction, Declaration {
 		Environment.getInstance().setCurrentFunction(this);
 
 		HierarchicalScope<Declaration> funcScope = new SymbolTable(_scope);
+		int offset = 0;
 		for(ParameterDeclaration decl : parameters) {
 			funcScope.register(decl);
+			offset -= decl.getType().length();
+			decl.setOffset(offset);
 		}
 		_scope.register(this);
 		boolean result = body.collect(funcScope);

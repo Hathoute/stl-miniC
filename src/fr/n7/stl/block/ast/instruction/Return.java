@@ -79,9 +79,9 @@ public class Return implements Instruction {
 				.mapToInt(x -> x.getType().length())
 				.sum();
 
-		Fragment thisCode = _factory.createFragment();
-		thisCode.add(_factory.createReturn(returnType.length(), paramSize));
-		return thisCode;
+		Fragment result = this.value.getCode(_factory);
+		result.add(_factory.createReturn(returnType.length(), paramSize));
+		return result;
 	}
 
 	@Override

@@ -1,8 +1,10 @@
     test {
-        typedef int Entier;
-        typedef struct Point { Entier x; int y; } Point;
-        Point pt = {1, 2};
         int i = 1;
+        int *ptr = &i;
+        typedef int Entier;
+        typedef Entier Entier2;
+        typedef struct Point { Entier x; Entier2 y; } Point;
+        Point pt = {1, *ptr};
         const int j = pt.y;
         <int, int> p = <i, j>;
         int k = fst p;
@@ -12,11 +14,13 @@
         else {
             int p = 1;
         }
-        while(i != 2){
-            int j= i > 2 ? i : k;
+        while(i < 10){
+            *ptr = *ptr + 1;
         }
 
         i = 2;
+
+        i = func(1, 2);
 
         int func(int abc, int cde) {
             int j = 1;
@@ -25,4 +29,6 @@
             }
             return 0;
         }
+
+        print i;
     }

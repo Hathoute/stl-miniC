@@ -165,7 +165,14 @@ public class Block {
 				continue;
 			}
 
-			thisFragment.append(instr.getCode(_factory));
+			Fragment f = instr.getCode(_factory);
+			thisFragment.append(f);
+
+			String line = instr.toString();
+			line = line.endsWith("\n") ? line.substring(0, line.length() - 1) : line;
+			line = line.replaceAll("\n", "\n;");
+			f.addComment("");
+			f.addComment(line);
 		}
 
 		thisFragment.add(_factory.createPop(0, this.allocatedSize));

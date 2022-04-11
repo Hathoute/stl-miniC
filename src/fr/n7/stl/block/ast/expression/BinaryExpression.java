@@ -146,7 +146,7 @@ public class BinaryExpression implements Expression {
 		Fragment _result = this.left.getCode(_factory);
 		_result.append(this.right.getCode(_factory));
 		_result.add(TAMFactory.createBinaryOperator(this.operator));
-		_result.addComment(this.toString());
+		//_result.addComment(this.toString());
 		return _result;
 	}
 

@@ -41,7 +41,7 @@ public class ConstantAccess extends AbstractAccess {
 				this.declaration.getRegister(),
 				this.declaration.getOffset(),
 				this.declaration.getType().length()));
-		_result.addComment(this.toString());
+		//_result.addComment(this.toString());
 		return _result;
 	}
 

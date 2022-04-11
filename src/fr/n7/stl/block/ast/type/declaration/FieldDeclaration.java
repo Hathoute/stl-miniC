@@ -55,4 +55,8 @@ public class FieldDeclaration implements Declaration {
 		return this.offset;
 	}
 
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
 }
