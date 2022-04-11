@@ -10,6 +10,7 @@ import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.UniqueIdProvider;
 
 /**
  * Abstract Syntax Tree node for a conditional expression.
@@ -91,7 +92,26 @@ public class ConditionalExpression implements Expression {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException( "Semantics getCode is undefined in ConditionalExpression.");
+		int uniqueId = UniqueIdProvider.GetNextId();
+		String lblThen = "cond_then_" + uniqueId;
+		String lblExit = "cond_exit_" + uniqueId;
+
+
+		Fragment _condCode = this.condition.getCode(_factory);
+		Fragment _thenCode = this.thenExpression.getCode(_factory);
+		Fragment _elseCode = this.elseExpression.getCode(_factory);
+
+		_thenCode.addPrefix(lblThen);
+		_thenCode.addSuffix(lblExit);
+
+		Fragment thisCode = _factory.createFragment();
+		thisCode.append(_condCode);
+		thisCode.add(_factory.createJumpIf(lblThen, 1));
+		thisCode.append(_elseCode);
+		thisCode.add(_factory.createJump(lblExit));
+		thisCode.append(_thenCode);
+
+		return thisCode;
 	}
 
 }

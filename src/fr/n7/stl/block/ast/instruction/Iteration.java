@@ -14,6 +14,7 @@ import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.UniqueIdProvider;
 
 /**
  * Implementation of the Abstract Syntax Tree node for a conditional instruction.
@@ -75,7 +76,22 @@ public class Iteration implements Instruction {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException( "Semantics getCode is undefined in Iteration.");
+		int uniqueId = UniqueIdProvider.GetNextId();
+		String lblBegin = "loop_start_" + uniqueId;
+		String lblEnd = "loop_end_" + uniqueId;
+
+		Fragment condCode = this.condition.getCode(_factory);
+		Fragment bodyCode = this.body.getCode(_factory);
+
+		Fragment thisCode = _factory.createFragment();
+		thisCode.append(condCode);
+		thisCode.add(_factory.createJumpIf(lblEnd, 0));
+		thisCode.append(bodyCode);
+		thisCode.add(_factory.createJump(lblBegin));
+		thisCode.addPrefix(lblBegin);
+		thisCode.addSuffix(lblEnd);
+
+		return thisCode;
 	}
 
 	@Override

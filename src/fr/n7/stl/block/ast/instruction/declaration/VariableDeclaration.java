@@ -147,7 +147,9 @@ public class VariableDeclaration implements Declaration, Instruction {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("Semantics getCode is undefined in VariableDeclaration.");
+		Fragment result = this.value.getCode(_factory);
+		result.add(_factory.createStore(this.register, this.offset, this.type.length()));
+		return result;
 	}
 
 	@Override

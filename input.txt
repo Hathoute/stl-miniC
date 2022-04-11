@@ -15,8 +15,6 @@ test {
 
     i = 2;
 
-    print "text";
-
     int func(int abc) {
         int j = 1;
         if(j < 1) {
@@ -24,6 +22,4 @@ test {
         }
         return 0;
     }
-
-    return 1;
 }

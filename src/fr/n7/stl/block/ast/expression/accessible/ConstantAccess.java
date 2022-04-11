@@ -36,7 +36,13 @@ public class ConstantAccess extends AbstractAccess {
 	 * @see fr.n7.stl.block.ast.expression.AbstractUse#getCode(fr.n7.stl.tam.ast.TAMFactory)
 	 */
 	public Fragment getCode(TAMFactory _factory) {
-		return this.declaration.getCode(_factory);
+		Fragment _result = _factory.createFragment();
+		_result.add(_factory.createLoad(
+				this.declaration.getRegister(),
+				this.declaration.getOffset(),
+				this.declaration.getType().length()));
+		_result.addComment(this.toString());
+		return _result;
 	}
 
 }

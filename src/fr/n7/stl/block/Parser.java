@@ -5,11 +5,15 @@
 
 package fr.n7.stl.block;
 
+import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
+import fr.n7.stl.tam.ast.impl.TAMFactoryImpl;
 import java_cup.runtime.*;
 import fr.n7.stl.block.Lexer;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.util.*;
 import fr.n7.stl.block.ast.*;
 import fr.n7.stl.block.ast.expression.*;
@@ -749,22 +753,28 @@ class CUP$Parser$actions {
 				System.out.println( "Block named : " + nom );
 				System.out.println( bloc ); 
 				SymbolTable tds = new SymbolTable();
-				if (bloc.collect(tds)) {
-					System.out.println("Collect succeeded.");
-					if (bloc.resolve(tds)) {
-						System.out.println("Resolve succeeded.");
-                        if(bloc.checkType()) {
-                          System.out.println("CheckType succeeded.");
-                        }
-                        else {
-                            System.out.println("CheckType failed.");
-                        }
-					} else {
-						System.out.println("Resolve failed." + tds);
-					}
-				} else {
-					System.out.println("Collect failed : " + tds);
-				}
+
+                if(!bloc.collect(tds)) {
+                  System.out.println("Collect failed.");
+                }
+                else if(!bloc.resolve(tds)) {
+                  System.out.println("Resolve failed.");
+                }
+                else if(!bloc.checkType()) {
+                  System.out.println("CheckType failed.");
+                }
+                else {
+                  System.out.println("Building allocations");
+                  bloc.allocateMemory(Register.SB, 0);
+
+                  System.out.println("Generation code");
+                  Fragment code = bloc.getCode(new TAMFactoryImpl());
+
+                  System.out.println("Writing to output.txt");
+                  PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
+                  writer.write(code.toString());
+                  writer.close();
+                }
 			
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Program",0, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }

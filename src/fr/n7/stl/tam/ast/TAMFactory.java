@@ -8,6 +8,7 @@ import java.util.List;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.BinaryOperator;
 import fr.n7.stl.block.ast.expression.UnaryOperator;
+import fr.n7.stl.block.ast.type.AtomicType;
 
 /**
  * Factory to build abstract syntax tree nodes for the TAM language.
@@ -221,7 +222,7 @@ public interface TAMFactory {
 		default: throw new SemanticsUndefinedException("Unexpected unary operator: " + _operator);
 		}
 	}
-	
+
 	/**
 	 * Build a TAM unary operator instruction AST node whose execution will pop one
 	 * value from the stack, compute the result of the unary operator applied to
@@ -231,9 +232,24 @@ public interface TAMFactory {
 	 */
 	public static TAMInstruction createUnaryOperator(UnaryOperator _operator) {
 		switch (_operator) {
-		case Negate : return Library.BNeg;
-		case Opposite : return Library.INeg;
-		default: return null;
+			case Negate : return Library.BNeg;
+			case Opposite : return Library.INeg;
+			default: return null;
+		}
+	}
+
+	/**
+	 * Build a TAM stdout operator
+	 * @param type Type of the object to pass to stdout.
+	 * @return A TAM instruction AST node corresponding to a call to Out.
+	 */
+	public static TAMInstruction createOutSubroutine(AtomicType type) {
+		switch (type) {
+			case BooleanType: return Library.BOut;
+			case CharacterType: return Library.COut;
+			case IntegerType: return Library.IOut;
+			case StringType: return Library.SOut;
+			default: return null;
 		}
 	}
 	

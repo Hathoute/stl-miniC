@@ -3,10 +3,12 @@
  */
 package fr.n7.stl.block.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
+import fr.n7.stl.block.ast.instruction.declaration.FunctionDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
@@ -33,6 +35,8 @@ public class Block {
 	protected List<Instruction> instructions;
 
 	protected HierarchicalScope<Declaration> blockScope;
+
+	private int allocatedSize;
 
 	/**
 	 * Constructor for a block.
@@ -132,13 +136,13 @@ public class Block {
 	 * @param _offset Inherited Current offset for the address of the variables.
 	 */	
 	public int allocateMemory(Register _register, int _offset) {
-		int size = 0;
-
+		allocatedSize = 0;
 		for(Instruction instr : this.instructions) {
-			size += instr.allocateMemory(_register, _offset + size);
+			allocatedSize += instr.allocateMemory(_register, _offset + allocatedSize);
 		}
 
-		return size;
+		// Variables declared in a block are only visible inside the block.
+		return 0;
 	}
 
 	/**
@@ -148,7 +152,29 @@ public class Block {
 	 * @return Synthesized AST for the generated TAM code.
 	 */
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("Semantics generateCode is undefined in Block.");
+		List<Instruction> callableInst = new ArrayList<>();
+
+		Fragment thisFragment = _factory.createFragment();
+
+		// Allocate memory for block variables
+		thisFragment.add(_factory.createPush(this.allocatedSize));
+
+		for(Instruction instr : this.instructions) {
+			if(instr instanceof FunctionDeclaration) {
+				callableInst.add(instr);
+				continue;
+			}
+
+			thisFragment.append(instr.getCode(_factory));
+		}
+
+		thisFragment.add(_factory.createPop(0, this.allocatedSize));
+
+		for(Instruction instr : callableInst) {
+			thisFragment.append(instr.getCode(_factory));
+		}
+
+		return thisFragment;
 	}
 
 }

@@ -22,6 +22,8 @@ public class Printer implements Instruction {
 
 	protected Expression parameter;
 
+	private AtomicType cachedType;
+
 	public Printer(Expression _value) {
 		this.parameter = _value;
 	}
@@ -55,7 +57,22 @@ public class Printer implements Instruction {
 	 */
 	@Override
 	public boolean checkType() {
-		return parameter.getType().equalsTo(AtomicType.StringType);
+		cachedType = AtomicType.ErrorType;
+
+		if(parameter.getType().equalsTo(AtomicType.StringType)) {
+			cachedType = AtomicType.StringType;
+		}
+		else if(parameter.getType().equalsTo(AtomicType.CharacterType)) {
+			cachedType = AtomicType.CharacterType;
+		}
+		else if(parameter.getType().equalsTo(AtomicType.BooleanType)) {
+			cachedType = AtomicType.BooleanType;
+		}
+		else if(parameter.getType().equalsTo(AtomicType.IntegerType)) {
+			cachedType = AtomicType.IntegerType;
+		}
+
+		return cachedType != AtomicType.ErrorType;
 	}
 
 	/* (non-Javadoc)
@@ -71,7 +88,10 @@ public class Printer implements Instruction {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("Semantics getCode undefined in Printer.");
+		Fragment result = this.parameter.getCode(_factory);
+		result.add(TAMFactory.createOutSubroutine(cachedType));
+		result.addComment("print");
+		return result;
 	}
 
 	@Override

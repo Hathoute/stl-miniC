@@ -82,6 +82,22 @@ public class ConstantDeclaration implements Instruction, Declaration {
 	public Expression getValue() {
 		return this.value;
 	}
+
+	/**
+	 * Synthesized semantics attribute for the register used to compute the address of the variable.
+	 * @return Register used to compute the address where the declared variable will be stored.
+	 */
+	public Register getRegister() {
+		return this.register;
+	}
+
+	/**
+	 * Synthesized semantics attribute for the offset used to compute the address of the variable.
+	 * @return Offset used to compute the address where the declared variable will be stored.
+	 */
+	public int getOffset() {
+		return this.offset;
+	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -137,7 +153,9 @@ public class ConstantDeclaration implements Instruction, Declaration {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException( "Semantics getCode is undefined in ConstantDeclaration.");
+		Fragment result = this.value.getCode(_factory);
+		result.add(_factory.createStore(this.register, this.offset, this.type.length()));
+		return result;
 	}
 
 	@Override

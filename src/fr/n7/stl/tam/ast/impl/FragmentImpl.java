@@ -55,7 +55,7 @@ public class FragmentImpl implements Fragment {
 	
 	public void addComment(String _comment) {
 		if (this.instructions.size() > 0) { 
-			this.instructions.get(0).addComment(_comment);
+			this.instructions.get(this.instructions.size()-1).addComment(_comment);
 		} else {
 			throw new IllegalArgumentException( "Fragment size is 0. No comment can be added.");
 		}
