@@ -3,8 +3,10 @@
  */
 package fr.n7.stl.block.ast.instruction;
 
+import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.Expression;
+import fr.n7.stl.block.ast.instruction.declaration.FunctionDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
@@ -71,7 +73,15 @@ public class Return implements Instruction {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("Semantics getCode undefined in Return.");
+		FunctionDeclaration func = Environment.getInstance().getCurrentFunction();
+		Type returnType = func.getType();
+		int paramSize = func.getParameters().stream()
+				.mapToInt(x -> x.getType().length())
+				.sum();
+
+		Fragment thisCode = _factory.createFragment();
+		thisCode.add(_factory.createReturn(returnType.length(), paramSize));
+		return thisCode;
 	}
 
 	@Override

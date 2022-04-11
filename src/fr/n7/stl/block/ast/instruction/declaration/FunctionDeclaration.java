@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import fr.n7.stl.block.ast.Block;
+import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
@@ -102,12 +103,23 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	 */
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
+		if(Environment.getInstance().getCurrentFunction() != null) {
+			// TODO: Report illegal use of nested functions
+			return false;
+		}
+
+		Environment.getInstance().setCurrentFunction(this);
+
 		HierarchicalScope<Declaration> funcScope = new SymbolTable(_scope);
 		for(ParameterDeclaration decl : parameters) {
 			funcScope.register(decl);
 		}
 		_scope.register(this);
-		return body.collect(funcScope);
+		boolean result = body.collect(funcScope);
+
+		Environment.getInstance().setCurrentFunction(null);
+
+		return result;
 	}
 	
 	/* (non-Javadoc)
@@ -115,7 +127,10 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	 */
 	@Override
 	public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
-		return body.resolve(_scope);
+		Environment.getInstance().setCurrentFunction(this);
+		boolean result = body.resolve(_scope);
+		Environment.getInstance().setCurrentFunction(null);
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -123,7 +138,10 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	 */
 	@Override
 	public boolean checkType() {
-		return body.checkReturnType(type) == CheckReturnCode.FINISHED;
+		Environment.getInstance().setCurrentFunction(this);
+		boolean result = body.checkReturnType(type) == CheckReturnCode.FINISHED;
+		Environment.getInstance().setCurrentFunction(null);
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -131,7 +149,9 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	 */
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
+		Environment.getInstance().setCurrentFunction(this);
 		body.allocateMemory(Register.LB, 3);
+		Environment.getInstance().setCurrentFunction(null);
 		return 0;
 	}
 
@@ -140,8 +160,10 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
+		Environment.getInstance().setCurrentFunction(this);
 		Fragment bodyCode = this.body.getCode(_factory);
 		bodyCode.addPrefix(this.name);
+		Environment.getInstance().setCurrentFunction(null);
 		return bodyCode;
 	}
 

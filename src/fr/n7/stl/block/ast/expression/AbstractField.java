@@ -3,6 +3,8 @@ package fr.n7.stl.block.ast.expression;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.type.AtomicType;
+import fr.n7.stl.block.ast.type.RecordType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
 
@@ -41,7 +43,7 @@ public abstract class AbstractField implements Expression {
 	 */
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
-		throw new SemanticsUndefinedException( "collect is undefined in AbstractField.");
+		return this.record.collectAndBackwardResolve(_scope);
 	}
 
 	/* (non-Javadoc)
@@ -49,7 +51,7 @@ public abstract class AbstractField implements Expression {
 	 */
 	@Override
 	public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
-		throw new SemanticsUndefinedException( "resolve is undefined in AbstractField.");
+		return this.record.fullResolve(_scope);
 	}
 
 	/**
@@ -57,7 +59,20 @@ public abstract class AbstractField implements Expression {
 	 * @return Synthesized Type of the expression.
 	 */
 	public Type getType() {
-		throw new SemanticsUndefinedException( "getType is undefined in FieldAccess.");
+		if(field != null) {
+			return field.getType();
+		}
+
+		Type type = this.record.getType();
+		if (type instanceof RecordType) {
+			RecordType recordType = (RecordType) type;
+			if (recordType.contains(name)) {
+				field = recordType.get(name);
+				return field.getType();
+			}
+		}
+
+		return AtomicType.ErrorType;
 	}
 
 }
