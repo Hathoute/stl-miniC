@@ -63,14 +63,7 @@ public interface Type {
 
 
 	public static Type getRealType(Type t) {
-		List<String> previousNames = new ArrayList<>();
 		while(t instanceof NamedType) {
-			if(previousNames.contains(((NamedType) t).name)) {
-				// TODO: Report recursive type definition
-				return AtomicType.ErrorType;
-			}
-
-			previousNames.add(((NamedType) t).name);
 			t = ((NamedType) t).getType();
 		}
 
