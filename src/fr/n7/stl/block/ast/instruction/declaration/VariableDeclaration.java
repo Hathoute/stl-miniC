@@ -104,7 +104,7 @@ public class VariableDeclaration implements Declaration, Instruction {
 	 */
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
-		boolean ok = value.collectAndBackwardResolve(_scope);
+		boolean ok = type.resolve(_scope) && value.collectAndBackwardResolve(_scope);
 
 		if(!_scope.contains(name)) {
 			_scope.register(this);

@@ -27,6 +27,8 @@ public enum AtomicType implements Type {
 	 */
 	@Override
 	public boolean equalsTo(Type _other) {
+		_other = Type.getRealType(_other);
+
 		return this == _other;
 	}
 
@@ -35,9 +37,12 @@ public enum AtomicType implements Type {
 	 */
 	@Override
 	public boolean compatibleWith(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (this.equalsTo(_other)) {
 			return true;
-		} else {
+		}
+		else {
 			switch (this) {
 			case NullType : return ((_other != ErrorType) && (_other != VoidType));
 			case IntegerType: return (_other == FloatingType);

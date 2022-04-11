@@ -32,6 +32,8 @@ public class SequenceType implements Type {
 	 */
 	@Override
 	public boolean equalsTo(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof SequenceType) {
 			SequenceType _local = (SequenceType) _other;
 			if (this.types.size() == _local.types.size()) {
@@ -78,6 +80,8 @@ public class SequenceType implements Type {
 	 */
 	@Override
 	public boolean compatibleWith(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof SequenceType) {
 			SequenceType _local = (SequenceType) _other;
 			if (this.types.size() == _local.types.size()) {
@@ -124,6 +128,8 @@ public class SequenceType implements Type {
 	 */
 	@Override
 	public Type merge(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof SequenceType) {
 			SequenceType _local = (SequenceType) _other;
 			SequenceType _result = new SequenceType();

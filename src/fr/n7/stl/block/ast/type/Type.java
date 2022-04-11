@@ -6,6 +6,9 @@ package fr.n7.stl.block.ast.type;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Gathers the common services provided by types.
  * Must be implemented by all the classes representing types in the language.
@@ -57,5 +60,21 @@ public interface Type {
 
 	 */
 	public boolean resolve(HierarchicalScope<Declaration> _scope);
+
+
+	public static Type getRealType(Type t) {
+		List<String> previousNames = new ArrayList<>();
+		while(t instanceof NamedType) {
+			if(previousNames.contains(((NamedType) t).name)) {
+				// TODO: Report recursive type definition
+				return AtomicType.ErrorType;
+			}
+
+			previousNames.add(((NamedType) t).name);
+			t = ((NamedType) t).getType();
+		}
+
+		return t;
+	}
 	
 }

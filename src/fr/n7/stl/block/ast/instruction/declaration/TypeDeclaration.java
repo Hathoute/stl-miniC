@@ -50,8 +50,16 @@ public class TypeDeclaration implements Declaration, Instruction {
 	 */
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
-		_scope.register(this);
-		return true;
+		boolean ok = type.resolve(_scope);
+		if(ok) {
+			if(!_scope.accepts(this)) {
+				// TODO: Report redefinition of existing type
+				return false;
+			}
+			_scope.register(this);
+		}
+
+		return ok;
 	}
 
 	/* (non-Javadoc)

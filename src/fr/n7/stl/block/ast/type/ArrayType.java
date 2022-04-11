@@ -24,6 +24,8 @@ public class ArrayType implements Type {
 	 */
 	@Override
 	public boolean equalsTo(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof ArrayType) {
 			return this.element.equalsTo(((ArrayType)_other).element);
 		} else {
@@ -36,6 +38,8 @@ public class ArrayType implements Type {
 	 */
 	@Override
 	public boolean compatibleWith(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof ArrayType) {
 			return this.element.compatibleWith(((ArrayType)_other).element);
 		} else {
@@ -48,6 +52,8 @@ public class ArrayType implements Type {
 	 */
 	@Override
 	public Type merge(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof ArrayType) {
 			return new ArrayType(this.element.merge(((ArrayType)_other).element));
 		} else {

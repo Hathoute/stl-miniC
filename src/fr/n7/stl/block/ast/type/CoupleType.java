@@ -31,6 +31,8 @@ public class CoupleType implements Type {
 	 */
 	@Override
 	public boolean equalsTo(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof CoupleType) {
 			return this.first.equalsTo(((CoupleType) _other).first)
 					&& this.second.equalsTo(((CoupleType) _other).second);
@@ -44,6 +46,8 @@ public class CoupleType implements Type {
 	 */
 	@Override
 	public boolean compatibleWith(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof CoupleType) {
 			return this.first.compatibleWith(((CoupleType) _other).first)
 					&& this.second.compatibleWith(((CoupleType) _other).second);
@@ -57,6 +61,8 @@ public class CoupleType implements Type {
 	 */
 	@Override
 	public Type merge(Type _other) {
+		_other = Type.getRealType(_other);
+
 		if (_other instanceof CoupleType) {
 			return new CoupleType( 
 					this.first.merge(((CoupleType) _other).first),

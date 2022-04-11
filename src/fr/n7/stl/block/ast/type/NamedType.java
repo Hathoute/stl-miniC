@@ -37,11 +37,9 @@ public class NamedType implements Type {
 	 */
 	@Override
 	public boolean equalsTo(Type _other) {
-		if (_other instanceof NamedType) {
-			return (this.declaration.getName().equals(((NamedType) _other).declaration.getName()));
-		} else {
-			return (this.declaration.getType().equalsTo(_other));
-		}
+		_other = Type.getRealType(_other);
+
+		return Type.getRealType(this).equalsTo(_other);
 	}
 
 	/*
@@ -51,11 +49,9 @@ public class NamedType implements Type {
 	 */
 	@Override
 	public boolean compatibleWith(Type _other) {
-		if (_other instanceof NamedType) {
-			return (this.declaration.getName().equals(((NamedType) _other).declaration.getName()));
-		} else {
-			return (this.declaration.getType().compatibleWith(_other));
-		}
+		_other = Type.getRealType(_other);
+
+		return Type.getRealType(this).compatibleWith(_other);
 	}
 
 	/*
@@ -65,15 +61,9 @@ public class NamedType implements Type {
 	 */
 	@Override
 	public Type merge(Type _other) {
-		if (_other instanceof NamedType) {
-			if (this.declaration.getName().equals(((NamedType) _other).declaration.getName())) {
-				return this;
-			} else {
-				return AtomicType.ErrorType;
-			}
-		} else {
-			return (this.declaration.getType().merge(_other));
-		}
+		_other = Type.getRealType(_other);
+
+		return Type.getRealType(this).merge(_other);
 	}
 
 	/**
@@ -82,12 +72,7 @@ public class NamedType implements Type {
 	 * @return Type associated to the name.
 	 */
 	public Type getType() {
-		Type _result = this.declaration.getType();
-		if (_result instanceof NamedType) {
-			return ((NamedType) _result).getType();
-		} else {
-			return _result;
-		}
+		return this.declaration.getType();
 	}
 
 	/*

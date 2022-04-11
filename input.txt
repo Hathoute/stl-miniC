@@ -1,7 +1,7 @@
     test {
-        struct Point { int x; int y; } pt = {1, 2};
-        typedef enum en { ENUM_1, ENUM_2, ENUM_3 } EEnum;
-        EEnum val = ENUM_1;
+        typedef int Entier;
+        typedef struct Point { Entier x; int y; } Point;
+        Point pt = {1, 2};
         int i = 1;
         const int j = pt.y;
         <int, int> p = <i, j>;

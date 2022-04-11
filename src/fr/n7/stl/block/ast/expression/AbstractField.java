@@ -64,6 +64,8 @@ public abstract class AbstractField implements Expression {
 		}
 
 		Type type = this.record.getType();
+		type = Type.getRealType(type);
+
 		if (type instanceof RecordType) {
 			RecordType recordType = (RecordType) type;
 			if (recordType.contains(name)) {
