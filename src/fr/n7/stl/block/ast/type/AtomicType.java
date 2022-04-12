@@ -6,6 +6,8 @@ package fr.n7.stl.block.ast.type;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 
+import java.awt.*;
+
 /**
  * Elementary types in the Bloc language.
  * @author Marc Pantel
@@ -28,6 +30,10 @@ public enum AtomicType implements Type {
 	@Override
 	public boolean equalsTo(Type _other) {
 		_other = Type.getRealType(_other);
+
+		if(this == NullType && _other instanceof PointerType) {
+			return true;
+		}
 
 		return this == _other;
 	}

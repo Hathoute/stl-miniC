@@ -1,0 +1,24 @@
+//1234
+test {
+    typedef struct Node { int v; Node* next; } Node;
+
+    Node n1 = { 1, null };
+    Node *n = &n1;
+    int i = 2;
+    while(i < 5) {
+        (*n).next = new Node();
+        n = (*n).next;
+        (*n).v = i;
+        i = i + 1;
+    }
+
+    n = &n1;
+    i = 1;
+    while(i < 5) {
+        print (*n).v;
+        n = (*n).next;
+        i = i + 1;
+    }
+
+    // Prints 1234
+}

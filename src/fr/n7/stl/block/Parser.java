@@ -756,13 +756,13 @@ class CUP$Parser$actions {
 				SymbolTable tds = new SymbolTable();
 
                 if(!bloc.collect(tds)) {
-                  System.out.println("Collect failed.");
+                  throw new SemanticsUndefinedException("Collect failed.");
                 }
                 else if(!bloc.resolve(tds)) {
-                  System.out.println("Resolve failed.");
+                  throw new SemanticsUndefinedException("Resolve failed.");
                 }
                 else if(!bloc.checkType()) {
-                  System.out.println("CheckType failed.");
+                  throw new SemanticsUndefinedException("CheckType failed.");
                 }
                 else {
                   System.out.println("Building allocations");
@@ -774,7 +774,7 @@ class CUP$Parser$actions {
                   code.add(factory.createHalt());
 
                   System.out.println("Writing to output.txt");
-                  PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
+                  PrintWriter writer = new PrintWriter("output.tam", "UTF-8");
                   writer.write(code.toString());
                   writer.close();
                 }

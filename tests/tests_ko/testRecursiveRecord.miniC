@@ -1,0 +1,3 @@
+test {
+    struct Point { int x; Point p; } pt = { 1; 2 };
+}

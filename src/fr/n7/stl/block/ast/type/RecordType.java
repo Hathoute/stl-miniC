@@ -8,10 +8,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
+import fr.n7.stl.block.ast.instruction.declaration.TypeDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.Scope;
+import fr.n7.stl.block.ast.scope.SymbolTable;
 import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
+import fr.n7.stl.util.Logger;
 
 /**
  * Implementation of the Abstract Syntax Tree node for a record type.
@@ -70,6 +73,10 @@ public class RecordType implements Type, Declaration, Scope<FieldDeclaration> {
 	@Override
 	public boolean equalsTo(Type _other) {
 		_other = Type.getRealType(_other);
+
+		if(_other instanceof RecordType) {
+			return this == _other;
+		}
 
 		return this.erase().equalsTo(_other);
 	}
@@ -194,10 +201,18 @@ public class RecordType implements Type, Declaration, Scope<FieldDeclaration> {
 	 */
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
+		HierarchicalScope<Declaration> recordScope = new SymbolTable(_scope);
+		// Allow circular types
+		recordScope.register(new TypeDeclaration(name, this));
+
 		boolean _result = true;
 		int offset = 0;
 		for (FieldDeclaration f : this.fields) {
-			_result = _result && f.getType().resolve(_scope);
+			_result = f.getType().resolve(recordScope) && _result;
+			if(hasRecursion(f.getType())) {
+				Logger.error("RecordType " + name + " is recursive.");
+				continue;
+			}
 
 			f.setOffset(offset);
 			offset += f.getType().length();
@@ -219,5 +234,18 @@ public class RecordType implements Type, Declaration, Scope<FieldDeclaration> {
 	@Override
 	public Type getType() {
 		return this;
+	}
+
+	private boolean hasRecursion(Type t) {
+		t = Type.getRealType(t);
+
+		if(t instanceof RecordType) {
+			return t == this;
+		}
+		else if(t instanceof CoupleType) {
+			return hasRecursion(((CoupleType) t).getFirst()) || hasRecursion(((CoupleType) t).getSecond());
+		}
+
+		return false;
 	}
 }

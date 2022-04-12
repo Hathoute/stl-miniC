@@ -1,3 +1,4 @@
+//12
 test {
     typedef int Entier;
     typedef Entier Entier2;

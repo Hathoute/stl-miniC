@@ -90,7 +90,7 @@ public class Return implements Instruction {
 
 	@Override
 	public CheckReturnCode checkReturnType(Type type) {
-		return value.getType().compatibleWith(type) ? CheckReturnCode.FINISHED : CheckReturnCode.TYPE_MISMATCH;
+		return value.getType().equalsTo(type) ? CheckReturnCode.FINISHED : CheckReturnCode.TYPE_MISMATCH;
 	}
 
 }

@@ -1,5 +1,3 @@
 test {
-    struct Point { int x; int y; } pt = { 1, 2 };
-    int y = pt.z;
-    int z = y.z;
+    struct Point { int x; Point p; } pt = { 1, 2 };
 }

@@ -124,7 +124,7 @@ public class Block {
 			}
 		}
 
-		if(curInstr < totalInstr) {
+		if(curInstr + 1 < totalInstr) {
 			Logger.warning("Unreachable code detected.");
 		}
 
