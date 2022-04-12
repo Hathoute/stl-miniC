@@ -60,7 +60,8 @@ public class Iteration implements Instruction {
 	 */
 	@Override
 	public boolean checkType() {
-		return condition.getType().equalsTo(AtomicType.BooleanType);
+		return condition.getType().equalsTo(AtomicType.BooleanType)
+				&& body.checkType();
 	}
 
 	/* (non-Javadoc)

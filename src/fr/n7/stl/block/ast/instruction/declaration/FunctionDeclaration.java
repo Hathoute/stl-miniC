@@ -143,6 +143,7 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	public boolean checkType() {
 		Environment.getInstance().setCurrentFunction(this);
 		boolean result = body.checkReturnType(type) == CheckReturnCode.FINISHED;
+		result = result && body.checkType();
 		Environment.getInstance().setCurrentFunction(null);
 		return result;
 	}

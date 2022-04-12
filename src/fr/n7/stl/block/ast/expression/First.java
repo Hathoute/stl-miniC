@@ -24,6 +24,8 @@ public class First implements Expression {
 	 */
 	protected Expression target;
 
+	protected CoupleType cachedType;
+
 	/**
 	 * Builds an Abstract Syntax Tree node for an expression extracting the first component of a couple.
 	 * @param _target : AST node for the expression whose value must whose first element is extracted by the expression.
@@ -36,7 +38,7 @@ public class First implements Expression {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "(fst" + this.target + ")";
+		return "(fst " + this.target + ")";
 	}
 	
 	/* (non-Javadoc)
@@ -60,9 +62,11 @@ public class First implements Expression {
 	 */
 	@Override
 	public Type getType() {
-		if(target.getType() instanceof CoupleType){
-			CoupleType ct= (CoupleType) target.getType();
-			return ct.getFirst();
+		Type t = Type.getRealType(target.getType());
+
+		if(t instanceof CoupleType){
+			cachedType = (CoupleType) t;
+			return cachedType.getFirst();
 		}
 
 		return AtomicType.ErrorType;
@@ -73,9 +77,8 @@ public class First implements Expression {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		CoupleType ct = (CoupleType) target.getType();
 		Fragment result = target.getCode(_factory);
-		result.add(_factory.createPop(0, ct.getSecond().length()));
+		result.add(_factory.createPop(0, cachedType.getSecond().length()));
 		return result;
 	}
 

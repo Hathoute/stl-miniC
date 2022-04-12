@@ -6,6 +6,8 @@ package fr.n7.stl.block.ast.expression;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.type.AtomicType;
+import fr.n7.stl.block.ast.type.CoupleType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
@@ -21,6 +23,8 @@ public class Second implements Expression {
 	 * AST node for the expression whose value must whose second element is extracted by the expression.
 	 */
 	private Expression target;
+
+	protected CoupleType cachedType;
 	
 	/**
 	 * Builds an Abstract Syntax Tree node for an expression extracting the second component of a couple.
@@ -34,7 +38,7 @@ public class Second implements Expression {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "(snd" + this.target + ")";
+		return "(snd " + this.target + ")";
 	}
 
 	/* (non-Javadoc)
@@ -42,7 +46,14 @@ public class Second implements Expression {
 	 */
 	@Override
 	public Type getType() {
-		throw new SemanticsUndefinedException("Semantics getType undefined in Second.");
+		Type t = Type.getRealType(target.getType());
+
+		if(t instanceof CoupleType){
+			cachedType = (CoupleType) t;
+			return cachedType.getSecond();
+		}
+
+		return AtomicType.ErrorType;
 	}
 	
 	/* (non-Javadoc)
@@ -67,7 +78,9 @@ public class Second implements Expression {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("Semantics getCode undefined in Second.");
+		Fragment result = target.getCode(_factory);
+		result.add(_factory.createPop(cachedType.getSecond().length(), cachedType.getFirst().length()));
+		return result;
 	}
 
 }

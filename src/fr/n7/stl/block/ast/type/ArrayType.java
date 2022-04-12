@@ -66,7 +66,8 @@ public class ArrayType implements Type {
 	 */
 	@Override
 	public int length() {
-		throw new SemanticsUndefinedException("Semantics length is not implemented in ArrayType.");
+		// Acts as a pointer...
+		return 1;
 	}
 
 	/* (non-Javadoc)

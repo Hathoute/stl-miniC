@@ -76,7 +76,9 @@ public class Conditional implements Instruction {
 	 */
 	@Override
 	public boolean checkType() {
-		return this.condition.getType().equalsTo(AtomicType.BooleanType);
+		return this.condition.getType().equalsTo(AtomicType.BooleanType)
+				&& this.thenBranch.checkType()
+				&& (this.elseBranch == null || this.elseBranch.checkType());
 	}
 
 	/* (non-Javadoc)

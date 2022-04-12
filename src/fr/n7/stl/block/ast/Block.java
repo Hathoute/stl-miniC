@@ -16,6 +16,7 @@ import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.UniqueIdProvider;
 
 /**
  * Represents a Block node in the Abstract Syntax Tree node for the Bloc language.
@@ -177,8 +178,17 @@ public class Block {
 
 		thisFragment.add(_factory.createPop(0, this.allocatedSize));
 
-		for(Instruction instr : callableInst) {
-			thisFragment.append(instr.getCode(_factory));
+		if(callableInst.size() > 0) {
+			Fragment functionsCode = _factory.createFragment();
+			String lblSkipFuncs = "block_end_" +  UniqueIdProvider.GetNextId();
+
+			functionsCode.add(_factory.createJump(lblSkipFuncs));
+			for (Instruction instr : callableInst) {
+				functionsCode.append(instr.getCode(_factory));
+			}
+
+			functionsCode.addSuffix(lblSkipFuncs);
+			thisFragment.append(functionsCode);
 		}
 
 		return thisFragment;

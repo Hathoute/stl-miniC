@@ -56,8 +56,11 @@ public class Return implements Instruction {
 	 */
 	@Override
 	public boolean checkType() {
-		// TODO: Report illegal usage of return (probably outside of a function)
-		return false;
+		if(Environment.getInstance().getCurrentFunction() == null) {
+			// TODO: Report illegal use of return
+			return false;
+		}
+		return true;
 	}
 
 	/* (non-Javadoc)

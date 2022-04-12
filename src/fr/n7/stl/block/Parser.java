@@ -7,6 +7,7 @@ package fr.n7.stl.block;
 
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
+import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.tam.ast.impl.TAMFactoryImpl;
 import java_cup.runtime.*;
 import fr.n7.stl.block.Lexer;
@@ -768,7 +769,9 @@ class CUP$Parser$actions {
                   bloc.allocateMemory(Register.SB, 0);
 
                   System.out.println("Generation code");
-                  Fragment code = bloc.getCode(new TAMFactoryImpl());
+                  TAMFactory factory = new TAMFactoryImpl();
+                  Fragment code = bloc.getCode(factory);
+                  code.add(factory.createHalt());
 
                   System.out.println("Writing to output.txt");
                   PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
