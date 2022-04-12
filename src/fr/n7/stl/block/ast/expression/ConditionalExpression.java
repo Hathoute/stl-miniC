@@ -114,4 +114,8 @@ public class ConditionalExpression implements Expression {
 		return thisCode;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return this.condition.isConstant() && this.thenExpression.isConstant() && this.elseExpression.isConstant();
+	}
 }

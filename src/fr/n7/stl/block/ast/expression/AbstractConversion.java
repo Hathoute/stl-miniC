@@ -79,4 +79,9 @@ public abstract class AbstractConversion<TargetType> implements Expression {
 		throw new SemanticsUndefinedException("Semantics getCode undefined in TypeConversion.");
 	}
 
+	@Override
+	public boolean isConstant() {
+		throw new SemanticsUndefinedException("Semantics isConstant undefined in TypeConversion.");
+	}
+
 }

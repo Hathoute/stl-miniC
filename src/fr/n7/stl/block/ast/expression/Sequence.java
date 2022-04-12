@@ -101,4 +101,14 @@ public class Sequence implements Expression {
 		return thisCode;
 	}
 
+	@Override
+	public boolean isConstant() {
+		for(Expression expr : this.values) {
+			if(!expr.isConstant()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

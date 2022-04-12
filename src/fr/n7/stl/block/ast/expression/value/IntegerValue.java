@@ -69,4 +69,8 @@ public class IntegerValue implements Value {
 		return _fragment;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return true;
+	}
 }

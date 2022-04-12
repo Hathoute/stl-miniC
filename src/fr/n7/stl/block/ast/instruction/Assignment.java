@@ -106,4 +106,8 @@ public class Assignment implements Instruction, Expression {
 		return CheckReturnCode.CONTINUE;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

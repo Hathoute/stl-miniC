@@ -33,5 +33,4 @@ public abstract class AbstractIdentifier implements Expression {
 	public String toString() {
 		return " " + this.name + " ";
 	}
-
 }

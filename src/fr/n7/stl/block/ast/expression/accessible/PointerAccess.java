@@ -34,4 +34,8 @@ public class PointerAccess extends AbstractPointer implements Expression {
 		return ptrCode;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

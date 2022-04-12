@@ -73,4 +73,9 @@ public class ArrayAllocation implements Expression {
 		return sizeCode;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
+
 }

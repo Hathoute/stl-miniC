@@ -62,4 +62,9 @@ public class AddressAccess implements AccessibleExpression {
 	public String toString() {
 		return "&(" + assignable.toString() + ")";
 	}
+
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

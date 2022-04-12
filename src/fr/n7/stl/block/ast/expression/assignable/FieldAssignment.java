@@ -38,5 +38,9 @@ public class FieldAssignment extends AbstractField implements AssignableExpressi
 
 		return objCode;
 	}
-	
+
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

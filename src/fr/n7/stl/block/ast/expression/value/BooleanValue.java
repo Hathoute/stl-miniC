@@ -79,5 +79,10 @@ public enum BooleanValue implements Value {
 		}
 		return _code;
 	}
+
+	@Override
+	public boolean isConstant() {
+		return true;
+	}
 	
 }

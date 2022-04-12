@@ -150,4 +150,8 @@ public class BinaryExpression implements Expression {
 		return _result;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return this.left.isConstant() && this.right.isConstant();
+	}
 }

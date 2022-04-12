@@ -68,4 +68,8 @@ public class PointerAllocation implements Expression {
 		return thisCode;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

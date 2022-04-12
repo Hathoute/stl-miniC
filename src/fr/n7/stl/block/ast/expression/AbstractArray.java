@@ -83,4 +83,9 @@ public abstract class AbstractArray implements Expression {
 		return type;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
+
 }

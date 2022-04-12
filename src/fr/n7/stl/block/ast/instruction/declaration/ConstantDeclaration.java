@@ -5,6 +5,10 @@ package fr.n7.stl.block.ast.instruction.declaration;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.Expression;
+import fr.n7.stl.block.ast.expression.Sequence;
+import fr.n7.stl.block.ast.expression.value.BooleanValue;
+import fr.n7.stl.block.ast.expression.value.IntegerValue;
+import fr.n7.stl.block.ast.expression.value.Value;
 import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.scope.Declaration;
@@ -14,6 +18,7 @@ import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
+import sun.rmi.runtime.Log;
 
 /**
  * Implementation of the Abstract Syntax Tree node for a constant declaration instruction.
@@ -136,6 +141,13 @@ public class ConstantDeclaration implements Instruction, Declaration {
 	 */
 	@Override
 	public boolean checkType() {
+		// Check if right type is constant.
+		if(!this.value.isConstant()) {
+			Logger.error("Cannot assign non constant value \"" + this.value.toString() + "\"" +
+					" to constant variable \"" + this.name + "\"");
+			return false;
+		}
+
 		return this.value.getType().equalsTo(this.type);
 	}
 

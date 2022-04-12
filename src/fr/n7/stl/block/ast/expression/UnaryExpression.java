@@ -102,4 +102,8 @@ public class UnaryExpression implements Expression {
 		return _result;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return this.parameter.isConstant();
+	}
 }

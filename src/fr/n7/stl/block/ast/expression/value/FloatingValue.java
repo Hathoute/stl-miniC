@@ -69,4 +69,8 @@ public class FloatingValue implements Value {
 		return _fragment;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return true;
+	}
 }

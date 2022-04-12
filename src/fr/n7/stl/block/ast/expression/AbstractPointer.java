@@ -69,4 +69,8 @@ public abstract class AbstractPointer implements Expression {
 		return ((PointerType) pointerType).getPointedType();
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

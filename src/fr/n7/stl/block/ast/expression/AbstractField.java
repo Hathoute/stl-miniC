@@ -83,5 +83,4 @@ public abstract class AbstractField implements Expression {
 
 		return AtomicType.ErrorType;
 	}
-
 }

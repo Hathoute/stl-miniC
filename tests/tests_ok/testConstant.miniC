@@ -1,0 +1,13 @@
+//1221
+test {
+    const int a = 1;
+    const int b = 2 * a;
+    const <int, int> c = <a+1, b-1>;
+
+    print a;
+    print b;
+    print fst c;
+    print snd c;
+
+    // Prints 1221
+}

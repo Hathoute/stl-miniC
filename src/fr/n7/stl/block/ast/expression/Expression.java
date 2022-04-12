@@ -38,6 +38,8 @@ public interface Expression {
 	 * @return Synthesized Type of the expression.
 	 */
 	public Type getType();
+
+	public boolean isConstant();
 	
 	/**
 	 * Inherited Semantics attribute to build the nodes of the abstract syntax tree for the generated TAM code.

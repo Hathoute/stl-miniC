@@ -117,4 +117,8 @@ public class IdentifierAccess extends AbstractIdentifier implements AccessibleEx
 		return this.expression.getCode(_factory);
 	}
 
+	@Override
+	public boolean isConstant() {
+		return this.expression instanceof ConstantAccess;
+	}
 }

@@ -84,4 +84,8 @@ public class Couple implements Expression {
 		return result;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return this.first.isConstant() && this.second.isConstant();
+	}
 }

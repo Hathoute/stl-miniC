@@ -43,4 +43,9 @@ public class ArrayAccess extends AbstractArray implements AccessibleExpression {
 		return indexCode;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
+
 }

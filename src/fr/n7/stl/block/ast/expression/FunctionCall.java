@@ -127,4 +127,8 @@ public class FunctionCall implements Expression {
 		return thisCode;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

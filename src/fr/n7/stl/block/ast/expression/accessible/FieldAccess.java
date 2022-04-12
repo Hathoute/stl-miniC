@@ -49,4 +49,8 @@ public class FieldAccess extends AbstractField implements Expression {
 		return objCode;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return false;
+	}
 }

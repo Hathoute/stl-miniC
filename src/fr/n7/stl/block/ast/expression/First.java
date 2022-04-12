@@ -82,4 +82,8 @@ public class First implements Expression {
 		return result;
 	}
 
+	@Override
+	public boolean isConstant() {
+		return this.target.isConstant();
+	}
 }
