@@ -1,0 +1,17 @@
+test {
+    typedef int Entier;
+    typedef Entier Entier2;
+
+    typedef <Entier, Entier2> CoupleEntier;
+
+    int x = 1;
+    int y = 2;
+    Entier z = x;
+
+    CoupleEntier ce = <x, y>;
+
+    print fst ce;
+    print snd ce;
+
+    // Prints 12
+}

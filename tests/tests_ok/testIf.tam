@@ -1,0 +1,22 @@
+test {
+    int i = 0;
+    if (i == 0) {
+        print 1;
+    }
+    else {
+        print 2;
+    }
+
+    if (i != 0) {
+        print 3;
+    }
+    else {
+        print 4;
+    }
+
+    if (i == 0) {
+        print 5;
+    }
+
+    // Prints 145
+}

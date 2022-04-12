@@ -1,0 +1,13 @@
+test {
+    int i = 1;
+    int *ptr = &i;
+    print *ptr;
+
+    *ptr = *ptr + 1;
+    print i;
+
+    i = 3;
+    print *ptr;
+
+    // Prints 123
+}

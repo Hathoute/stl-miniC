@@ -1,0 +1,13 @@
+test {
+    int sub(int x, int y) {
+        int c = x;
+        int d = y;
+        return c - d;
+    }
+
+    int res = sub(10, 5);
+    print res;
+    print sub(2, 4);
+
+    // Prints 5-2
+}

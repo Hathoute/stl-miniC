@@ -1,0 +1,17 @@
+test {
+    typedef struct Point { int x; int y; } Point;
+    Point p = { 1, 2 };
+
+    print p.x;
+    print p.y;
+
+    typedef struct CharPoint { Point p; char c } CharPoint;
+
+    p.x = 3;
+    p.y = 4;
+
+    print p.x;
+    print p.y;
+
+    // Prints 1234
+}
