@@ -1,0 +1,9 @@
+test {
+    int func(int a) {
+        if(a > 1) {
+            return 1;
+        }
+    }
+
+    int result = func(1);
+}

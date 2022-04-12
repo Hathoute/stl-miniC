@@ -1,0 +1,10 @@
+test {
+    int func(int a) {
+        int fnested() {
+            return 1;
+        }
+        return 0;
+    }
+
+    int result = func(1);
+}

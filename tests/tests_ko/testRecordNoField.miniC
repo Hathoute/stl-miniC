@@ -1,0 +1,4 @@
+test {
+    struct Point { int x; int y; } pt = { 1; 2 };
+    int y = pt.z;
+}

@@ -1,0 +1,5 @@
+test {
+    int func(int x, int x) {
+        return 1;
+    }
+}

@@ -72,7 +72,7 @@ public class FunctionCall implements Expression {
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
 		boolean ok = true;
 		for(Expression arg : arguments) {
-			ok = ok && arg.collectAndBackwardResolve(_scope);
+			ok = arg.collectAndBackwardResolve(_scope) && ok;
 		}
 
 		return ok;
@@ -99,7 +99,7 @@ public class FunctionCall implements Expression {
 		}
 
 		for(Expression arg : arguments) {
-			ok = ok && arg.fullResolve(_scope);
+			ok = arg.fullResolve(_scope) && ok;
 		}
 
 		return ok;

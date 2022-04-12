@@ -57,6 +57,10 @@ public class IdentifierAccess extends AbstractIdentifier implements AccessibleEx
 				this.expression = new VariableAccess((VariableDeclaration) _declaration);
 			}
 		}
+		else {
+			Logger.error("Undefined identifier \"" + name + "\"");
+			return false;
+		}
 		return true;
 	}
 	

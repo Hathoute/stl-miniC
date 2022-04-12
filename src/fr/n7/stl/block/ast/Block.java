@@ -16,6 +16,7 @@ import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.Logger;
 import fr.n7.stl.util.UniqueIdProvider;
 
 /**
@@ -71,7 +72,7 @@ public class Block {
 		boolean ok = true;
 
 		for (Instruction instr : this.instructions) {
-			ok = ok && instr.collectAndBackwardResolve(blockScope);
+			ok = instr.collectAndBackwardResolve(blockScope) && ok;
 		}
 		
 		return ok;
@@ -88,7 +89,7 @@ public class Block {
 		boolean ok = true;
 
 		for (Instruction instr : this.instructions) {
-			ok = ok && instr.fullResolve(this.blockScope);
+			ok = instr.fullResolve(this.blockScope) && ok;
 		}
 		
 		return ok;
@@ -102,7 +103,7 @@ public class Block {
 		boolean ok = true;
 
 		for (Instruction instr : this.instructions) {
-			ok = ok && instr.checkType();
+			ok = instr.checkType() && ok;
 		}
 
 		return ok;
@@ -124,7 +125,7 @@ public class Block {
 		}
 
 		if(curInstr < totalInstr) {
-			// TODO: Report unreachable code.
+			Logger.warning("Unreachable code detected.");
 		}
 
 		return returnCode;

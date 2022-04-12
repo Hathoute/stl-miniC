@@ -6,6 +6,7 @@ import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.PointerType;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.util.Logger;
 
 import java.awt.*;
 
@@ -61,7 +62,7 @@ public abstract class AbstractPointer implements Expression {
 	public Type getType() {
 		Type pointerType = this.pointer.getType();
 		if(!(pointerType instanceof PointerType)) {
-			// TODO: Attempting to dereference non-pointer expression.
+			Logger.error("Attempting to dereference a non-pointer variable.");
 			return AtomicType.ErrorType;
 		}
 

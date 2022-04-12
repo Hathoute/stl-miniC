@@ -13,6 +13,7 @@ import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.Logger;
 
 /**
  * Abstract Syntax Tree node for a variable declaration instruction.
@@ -110,7 +111,7 @@ public class VariableDeclaration implements Declaration, Instruction {
 			_scope.register(this);
 			return ok;
 		} else {
-			// TODO : signaler erreur double déclaration
+			Logger.error("Variable " + name + " already defined.");
 			return false;
 		}
 	}

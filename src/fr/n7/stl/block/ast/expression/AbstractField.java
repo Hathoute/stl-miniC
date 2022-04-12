@@ -7,6 +7,7 @@ import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.RecordType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
+import fr.n7.stl.util.Logger;
 
 /**
  * Common elements between left (Assignable) and right (Expression) end sides of assignments. These elements
@@ -72,6 +73,12 @@ public abstract class AbstractField implements Expression {
 				field = recordType.get(name);
 				return field.getType();
 			}
+			else {
+				Logger.error("Type " + ((RecordType) type).getName() + " has no field named \"" + name + "\"");
+			}
+		}
+		else {
+			Logger.error("" + this.record.toString() + " is not a Record.");
 		}
 
 		return AtomicType.ErrorType;

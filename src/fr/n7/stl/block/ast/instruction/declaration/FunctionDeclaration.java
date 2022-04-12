@@ -18,6 +18,7 @@ import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.Logger;
 
 /**
  * Abstract Syntax Tree node for a function declaration.
@@ -104,7 +105,8 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
 		if(Environment.getInstance().getCurrentFunction() != null) {
-			// TODO: Report illegal use of nested functions
+			Logger.error("Nested functions are not supported (" + this.name
+					+ " inside " + Environment.getInstance().getCurrentFunction().name + ").");
 			return false;
 		}
 
@@ -112,13 +114,19 @@ public class FunctionDeclaration implements Instruction, Declaration {
 
 		HierarchicalScope<Declaration> funcScope = new SymbolTable(_scope);
 		int offset = 0;
+		boolean result = true;
 		for(ParameterDeclaration decl : parameters) {
+			if(!funcScope.accepts(decl)) {
+				Logger.error("Parameter " + decl.name + " already defined.");
+				result = false;
+				continue;
+			}
 			funcScope.register(decl);
 			offset -= decl.getType().length();
 			decl.setOffset(offset);
 		}
 		_scope.register(this);
-		boolean result = body.collect(funcScope);
+		result = result && body.collect(funcScope);
 
 		Environment.getInstance().setCurrentFunction(null);
 
