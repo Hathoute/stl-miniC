@@ -6,9 +6,14 @@ test {
         return c - d;
     }
 
+    void prnt(int i) {
+        int j = i;
+        print i;
+    }
+
     int res = sub(10, 5);
-    print res;
-    print sub(2, 4);
+    void t = prnt(res);
+    t = prnt(sub(2, 4));
 
     // Prints 5-2
 }

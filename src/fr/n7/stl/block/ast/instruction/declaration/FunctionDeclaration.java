@@ -14,6 +14,7 @@ import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -150,7 +151,9 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	@Override
 	public boolean checkType() {
 		Environment.getInstance().setCurrentFunction(this);
-		boolean result = body.checkReturnType(type) == CheckReturnCode.FINISHED;
+		CheckReturnCode code = body.checkReturnType(type);
+		boolean result = code == CheckReturnCode.FINISHED
+				|| (type == AtomicType.VoidType && code == CheckReturnCode.CONTINUE);
 		result = result && body.checkType();
 		Environment.getInstance().setCurrentFunction(null);
 		return result;
@@ -174,6 +177,11 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	public Fragment getCode(TAMFactory _factory) {
 		Environment.getInstance().setCurrentFunction(this);
 		Fragment bodyCode = this.body.getCode(_factory);
+
+		if(type == AtomicType.VoidType) {
+			bodyCode.add(_factory.createReturn(0, 0));
+		}
+
 		bodyCode.addPrefix(this.name);
 		Environment.getInstance().setCurrentFunction(null);
 		return bodyCode;
