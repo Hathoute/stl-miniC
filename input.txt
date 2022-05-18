@@ -1,4 +1,11 @@
 test {
-    const int b = 1;
-    b = 2;
+    character str[] = new character[10];
+
+    str[0] = 'h';
+    str[1] = 'e';
+    str[2] = 'l';
+    str[3] = 'l';
+    str[4] = 'o';
+    str[5] = '\n';
+    str[6] = '\0';
 }
