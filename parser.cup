@@ -172,23 +172,27 @@ Elements ::= Main
 		:}
 		;
 
-Interface ::= UL_Interface UL_Identificateur Generics MultipleInherits
-		UL_Accolade_Ouvrante InterfaceElements UL_Accolade_Fermante
+Interface ::= UL_Interface UL_Identificateur Generics : generics MultipleInherits
+		UL_Accolade_Ouvrante InterfaceElements : interfaceElements UL_Accolade_Fermante
 		{:
+			RESULT := new Interface(generics, interfaceElements);
 		:}
 		;
 
-Class ::= UL_Classe UL_Identificateur Generics SingleInherits Implements
-		UL_Accolade_Ouvrante ClassElements UL_Accolade_Fermante
+Class ::= UL_Classe UL_Identificateur Generics : generics SingleInherits : superClass Implements : classImplemented
+		UL_Accolade_Ouvrante ClassElements : classElements UL_Accolade_Fermante
 		{:
+			RESULT := new Class(generics , classElements, classImplemented, superClass);
 		:}
 		;
 
 Main ::= UL_Public UL_Classe UL_Classe_Principale
 		UL_Accolade_Ouvrante
 			UL_Public UL_De_Classe UL_Type_Vide UL_Methode_Principale
-			UL_Parenthese_Ouvrante Parameters UL_Parenthese_Fermante Block UL_Accolade_Fermante
+			UL_Parenthese_Ouvrante Parameters : Params UL_Parenthese_Fermante Block : block UL_Accolade_Fermante
 		{:
+			RESULT := new MainClass(Params, block);
+
 		:}
 		;
 
