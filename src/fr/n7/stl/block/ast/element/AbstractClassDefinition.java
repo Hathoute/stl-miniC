@@ -12,13 +12,13 @@ import fr.n7.stl.tam.ast.TAMFactory;
 
 import java.util.List;
 
-public abstract class AbstractClass implements Element {
+public abstract class AbstractClassDefinition implements Element {
 
     protected String name;
     protected List<ClassElement> elements;
-    protected HierarchicalScope<Declaration> elementsScope;
+    protected HierarchicalScope<ClassElement> elementsScope;
 
-    public AbstractClass(String name, List<ClassElement> elements) {
+    public AbstractClassDefinition(String name, List<ClassElement> elements) {
         this.name = name;
         this.elements = elements;
     }
@@ -29,19 +29,27 @@ public abstract class AbstractClass implements Element {
     }
 
     @Override
-    public boolean collect(HierarchicalScope<Element> _scope) {
-        Environment.getInstance().setCurrentElement(this);
-        if(!_scope.accepts(this))
-            // Continue here...
-
-        elementsScope = new SymbolTable();
-        boolean ok = elements.stream().allMatch(x -> x.collect(elementsScope));
-        Environment.getInstance().setCurrentElement(null);
-
+    public Scope<ClassElement> getContext() {
+        return elementsScope;
     }
 
     @Override
-    public boolean resolve(HierarchicalScope<Element> _scope) {
+    public boolean collect(Scope<Element> _scope) {
+        Environment.getInstance().setCurrentElement(this);
+        if(!_scope.accepts(this)) {
+            return false;
+        }
+        _scope.register(this);
+
+        elementsScope = new SymbolTable<>(elementsScope);
+        boolean ok = elements.stream().allMatch(x -> x.collect(elementsScope));
+        Environment.getInstance().setCurrentElement(null);
+
+        return ok;
+    }
+
+    @Override
+    public boolean resolve(Scope<Element> _scope) {
         Environment.getInstance().setCurrentElement(this);
         boolean ok = elements.stream().allMatch(x -> x.resolve(elementsScope));
         Environment.getInstance().setCurrentElement(null);

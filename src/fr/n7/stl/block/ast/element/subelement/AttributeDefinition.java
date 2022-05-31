@@ -3,12 +3,13 @@ package fr.n7.stl.block.ast.element.subelement;
 import fr.n7.stl.block.ast.expression.Expression;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.scope.SymbolTable;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
-public class Attribute implements ClassElement {
+public class AttributeDefinition implements ClassElement {
 
     protected boolean isStatic;
     protected boolean isFinal;
@@ -16,7 +17,7 @@ public class Attribute implements ClassElement {
     protected String name;
     protected Expression value;
 
-    public Attribute(boolean isStatic, boolean isFinal, Type type, String name, Expression value) {
+    public AttributeDefinition(boolean isStatic, boolean isFinal, Type type, String name, Expression value) {
         this.isStatic = isStatic;
         this.isFinal = isFinal;
         this.type = type;
@@ -25,7 +26,7 @@ public class Attribute implements ClassElement {
     }
 
     @Override
-    public boolean collect(HierarchicalScope<Declaration> _scope) {
+    public boolean collect(HierarchicalScope<ClassElement> _scope) {
         if(!_scope.accepts(this)) {
             return false;
         }
@@ -35,10 +36,11 @@ public class Attribute implements ClassElement {
     }
 
     @Override
-    public boolean resolve(HierarchicalScope<Declaration> _scope) {
-        boolean ok = this.type.resolve(_scope);
-        ok = this.value.collectAndBackwardResolve(_scope) && ok;
-        ok = this.value.fullResolve(_scope) && ok;
+    public boolean resolve(HierarchicalScope<ClassElement> _scope) {
+        boolean ok = this.type.resolve();
+        SymbolTable<Declaration> innerScope = new SymbolTable<>();
+        ok = this.value.collectAndBackwardResolve(innerScope) && ok;
+        ok = this.value.fullResolve(innerScope) && ok;
 
         return ok;
     }

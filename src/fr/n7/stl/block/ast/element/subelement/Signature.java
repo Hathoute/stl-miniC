@@ -33,7 +33,7 @@ public class Signature {
     }
 
     public boolean resolve(HierarchicalScope<Declaration> _scope) {
-        return parameters.stream().allMatch(x -> x.getType().resolve(_scope)) && type.resolve(_scope);
+        return parameters.stream().allMatch(x -> x.getType().resolve()) && type.resolve();
     }
 
     public int allocateMemory(Register _register, int _offset) {

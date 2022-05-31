@@ -6,7 +6,6 @@ package fr.n7.stl.block.ast.instruction;
 import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.Expression;
-import fr.n7.stl.block.ast.instruction.declaration.FunctionDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
@@ -77,7 +76,7 @@ public class Return implements Instruction {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		FunctionDeclaration func = Environment.getInstance().getCurrentFunction();
+		/*FunctionDeclaration func = Environment.getInstance().getCurrentFunction();
 		Type returnType = func.getType();
 		int paramSize = func.getParameters().stream()
 				.mapToInt(x -> x.getType().length())
@@ -85,7 +84,8 @@ public class Return implements Instruction {
 
 		Fragment result = this.value.getCode(_factory);
 		result.add(_factory.createReturn(returnType.length(), paramSize));
-		return result;
+		return result;*/
+		return null;
 	}
 
 	@Override

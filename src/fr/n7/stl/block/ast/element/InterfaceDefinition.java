@@ -1,20 +1,25 @@
 package fr.n7.stl.block.ast.element;
 
+import fr.n7.stl.block.ast.element.subelement.ClassElement;
+import fr.n7.stl.block.ast.element.subelement.MethodSignatureDefinition;
 import fr.n7.stl.block.ast.element.subelement.Signature;
-import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.scope.Scope;
+import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
 import java.util.List;
 
-public class Interface implements Element {
+public class InterfaceDefinition implements Element {
 
     protected String name;
-    protected List<Signature> elements;
+    protected List<MethodSignatureDefinition> elements;
 
-    public Interface(String name, List<Signature> elements) {
+    protected Scope<ClassElement> interfaceElements;
+
+    public InterfaceDefinition(String name, List<MethodSignatureDefinition> elements) {
         this.name = name;
         this.elements = elements;
     }
@@ -26,12 +31,22 @@ public class Interface implements Element {
     }
 
     @Override
-    public boolean collect(HierarchicalScope<ElementDeclaration> _scope) {
+    public Type getType() {
+        return null;
+    }
+
+    @Override
+    public Scope<ClassElement> getContext() {
+        return interfaceElements;
+    }
+
+    @Override
+    public boolean collect(Scope<Element> _scope) {
         return false;
     }
 
     @Override
-    public boolean resolve(HierarchicalScope<ElementDeclaration> _scope) {
+    public boolean resolve(Scope<Element> _scope) {
         return false;
     }
 

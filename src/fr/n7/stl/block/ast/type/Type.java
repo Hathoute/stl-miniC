@@ -54,20 +54,15 @@ public interface Type {
 	/**
 	 * Inherited Semantics attribute to check that all identifiers have been defined and
 	 * associate all identifiers uses with their definitions.
-	 * @param _scope Inherited Scope attribute that contains the defined identifiers.
 	 * @return Synthesized Semantics attribute that indicates if the identifier used in the
 	 * type have been previously defined.
 
 	 */
-	public boolean resolve(HierarchicalScope<Declaration> _scope);
+	public boolean resolve();
 
 
 	public static Type getRealType(Type t) {
-		while(t instanceof NamedType) {
-			t = ((NamedType) t).getType();
-		}
-
-		return t;
+		return null;
 	}
 	
 }

@@ -31,10 +31,6 @@ public enum AtomicType implements Type {
 	public boolean equalsTo(Type _other) {
 		_other = Type.getRealType(_other);
 
-		if(this == NullType && _other instanceof PointerType) {
-			return true;
-		}
-
 		return this == _other;
 	}
 
@@ -112,7 +108,7 @@ public enum AtomicType implements Type {
 	 * @see fr.n7.stl.block.ast.type.Type#resolve(fr.n7.stl.block.ast.scope.Scope)
 	 */
 	@Override
-	public boolean resolve(HierarchicalScope<Declaration> _scope) {
+	public boolean resolve() {
 		return true;
 	}
 

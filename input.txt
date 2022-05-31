@@ -1,11 +1,9 @@
-test {
-    character str[] = new character[10];
+class Sui {
+}
 
-    str[0] = 'h';
-    str[1] = 'e';
-    str[2] = 'l';
-    str[3] = 'l';
-    str[4] = 'o';
-    str[5] = '\n';
-    str[6] = '\0';
+public class Main {
+    public static void main(String][ args) {
+        Sui aaa = 1;
+        return true;
+    }
 }

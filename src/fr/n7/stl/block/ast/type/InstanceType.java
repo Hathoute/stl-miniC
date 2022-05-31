@@ -3,6 +3,8 @@
  */
 package fr.n7.stl.block.ast.type;
 
+import fr.n7.stl.block.ast.Environment;
+import fr.n7.stl.block.ast.element.Element;
 import fr.n7.stl.block.ast.instruction.declaration.TypeDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
@@ -14,19 +16,19 @@ import fr.n7.stl.util.Logger;
  * @author Marc Pantel
  *
  */
-public class NamedType implements Type {
+public class InstanceType implements Type {
 
-	private TypeDeclaration declaration;
+	private Element definition;
 
 	public String name;
 
-	public NamedType(String _name) {
+	public InstanceType(String _name) {
 		this.name = _name;
-		this.declaration = null;
+		this.definition = null;
 	}
 
-	public NamedType(TypeDeclaration _declaration) {
-		this.declaration = _declaration;
+	public InstanceType(Element _declaration) {
+		this.definition = _declaration;
 		this.name = _declaration.getName();
 	}
 
@@ -72,7 +74,7 @@ public class NamedType implements Type {
 	 * @return Type associated to the name.
 	 */
 	public Type getType() {
-		return this.declaration.getType();
+		return this.definition.getType();
 	}
 
 	/*
@@ -82,7 +84,7 @@ public class NamedType implements Type {
 	 */
 	@Override
 	public int length() {
-		return this.declaration.getType().length();
+		return this.definition.getType().length();
 	}
 
 	/*
@@ -101,17 +103,12 @@ public class NamedType implements Type {
 	 * @see fr.n7.stl.block.ast.type.Type#resolve(fr.n7.stl.block.ast.scope.Scope)
 	 */
 	@Override
-	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		if (this.declaration == null) {
-			if (_scope.knows(this.name)) {
-				try {
-					TypeDeclaration _declaration = (TypeDeclaration) _scope.get(this.name);
-					this.declaration = _declaration;
-					return true;
-				} catch (ClassCastException e) {
-					Logger.error("The declaration for " + this.name + " is of the wrong kind.");
-					return false;
-				}
+	public boolean resolve() {
+		if (this.definition == null) {
+			Element base = Environment.getInstance().getElement(name);
+			if (base != null) {
+				this.definition = base;
+				return true;
 			} else {
 				Logger.error("The identifier " + this.name + " has not been found.");
 				return false;

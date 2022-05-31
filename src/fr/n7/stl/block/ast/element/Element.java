@@ -1,7 +1,9 @@
 package fr.n7.stl.block.ast.element;
 
+import fr.n7.stl.block.ast.element.subelement.ClassElement;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.scope.Scope;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -13,6 +15,8 @@ public interface Element extends Declaration {
 
 	Type getType();
 
+	Scope<ClassElement> getContext();
+
 	/**
 	 * Inherited Semantics attribute to collect all the identifiers declaration and check
 	 * that the declaration are allowed.
@@ -21,7 +25,7 @@ public interface Element extends Declaration {
 	 * @return Synthesized Semantics attribute that indicates if the identifier declaration are
 	 * allowed.
 	 */
-	public boolean collect(HierarchicalScope<Element> _scope);
+	public boolean collect(Scope<Element> _scope);
 	
 	/**
 	 * Inherited Semantics attribute to transmit the scope, fill it and modify the AST
@@ -29,7 +33,7 @@ public interface Element extends Declaration {
 	 * @return Synthesized Semantics attribute that indicates if the identifier used in the
 	 * expression have been previously defined.
 	 */
-	public boolean resolve(HierarchicalScope<Element> _scope);
+	public boolean resolve(Scope<Element> _scope);
 
 	/**
 	 * Synthesized Semantics attribute to check that an instruction if well typed.

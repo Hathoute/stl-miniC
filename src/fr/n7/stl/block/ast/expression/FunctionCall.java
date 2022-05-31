@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
-import fr.n7.stl.block.ast.instruction.declaration.FunctionDeclaration;
+import fr.n7.stl.block.ast.element.subelement.MethodDefinition;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
@@ -32,7 +32,7 @@ public class FunctionCall implements Expression {
 	 * Declaration of the called function after name resolution.
 	 * TODO : Should rely on the VariableUse class.
 	 */
-	protected FunctionDeclaration function;
+	protected MethodDefinition function;
 	
 	/**
 	 * List of AST nodes that computes the values of the parameters for the function call.
@@ -86,13 +86,13 @@ public class FunctionCall implements Expression {
 		boolean ok = true;
 		if(_scope.knows(name)) {
 			Declaration decl = _scope.get(name);
-			if(decl instanceof FunctionDeclaration) {
+			/*if(decl instanceof FunctionDeclaration) {
 				function = (FunctionDeclaration) decl;
 				ok = function.fullResolve(_scope);
 			}
 			else {
 				ok = false;
-			}
+			}*/
 		}
 		else {
 			ok = false;

@@ -3,12 +3,7 @@
  */
 package fr.n7.stl.block.ast.instruction.declaration;
 
-import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.Expression;
-import fr.n7.stl.block.ast.expression.Sequence;
-import fr.n7.stl.block.ast.expression.value.BooleanValue;
-import fr.n7.stl.block.ast.expression.value.IntegerValue;
-import fr.n7.stl.block.ast.expression.value.Value;
 import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.scope.Declaration;

@@ -6,29 +6,33 @@ import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
-public class Method implements ClassElement {
+import java.util.List;
 
-    protected boolean isStatic;
-    protected boolean isFinal;
-    protected boolean isAbstract;
-    protected Signature signature;
+public class ConstructorDefinition implements ClassElement {
+
+    protected String name;
+    protected List<ParameterDeclaration> parameters;
     protected Block block;
 
-    public Method(boolean isStatic, boolean isFinal, boolean isAbstract, Signature signature, Block block) {
-        this.isStatic = isStatic;
-        this.isFinal = isFinal;
-        this.isAbstract = isAbstract;
-        this.signature = signature;
+    public ConstructorDefinition(String name, List<ParameterDeclaration> parameters, Block block) {
+        this.name = name;
+        this.parameters = parameters;
         this.block = block;
     }
 
     @Override
-    public boolean collect(HierarchicalScope<Declaration> _scope) {
+    public boolean collect(HierarchicalScope<ClassElement> _scope) {
+        String parentClassName = Environment.getInstance().getCurrentElement().getName();
+        if(!parentClassName.equals(name)) {
+            return false;
+        }
+
         if(!_scope.accepts(this)) {
             return false;
         }
@@ -38,13 +42,15 @@ public class Method implements ClassElement {
     }
 
     @Override
-    public boolean resolve(HierarchicalScope<Declaration> _scope) {
-        Environment.getInstance().setCurrentFunction(this);
-        HierarchicalScope<Declaration> innerScope = new SymbolTable(_scope);
-        boolean res = block.collect(innerScope) && block.resolve(innerScope);
-        Environment.getInstance().setCurrentFunction(null);
+    public boolean resolve(HierarchicalScope<ClassElement> _scope) {
+        HierarchicalScope<Declaration> innerScope = new SymbolTable<>(_scope);
+        Signature s = new Signature(AtomicType.NullType, name, parameters);
+        boolean ok = s.collect(innerScope);
+        ok = s.resolve(innerScope) && ok;
+        ok = block.collect(innerScope) && ok;
+        ok = block.resolve(innerScope) && ok;
 
-        return res;
+        return ok;
     }
 
     @Override
@@ -64,11 +70,11 @@ public class Method implements ClassElement {
 
     @Override
     public String getName() {
-        return signature.name;
+        return name;
     }
 
     @Override
     public Type getType() {
-        return signature.type;
+        return null;
     }
 }

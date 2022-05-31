@@ -51,7 +51,7 @@ public class TypeDeclaration implements Declaration, Instruction {
 	 */
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
-		boolean ok = type.resolve(_scope);
+		boolean ok = type.resolve();
 		if(ok) {
 			if(!_scope.accepts(this)) {
 				Logger.error("Type " + name + " already defined.");

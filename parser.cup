@@ -24,6 +24,8 @@ import fr.n7.stl.block.ast.scope.*;
 import fr.n7.stl.block.ast.type.*;
 import fr.n7.stl.block.ast.type.declaration.*;
 import fr.n7.stl.util.*;
+import fr.n7.stl.block.ast.element.*;
+import fr.n7.stl.block.ast.element.subelement.*;
 
 /* Variables partagées dans les actions de l'analyseur syntaxique. */
 parser code {:
@@ -95,12 +97,21 @@ non terminal Type						Type, Atomique;
 non terminal Expression 				Expression;
 non terminal AssignableExpression		Affectable;
 /* miniJava */
-non terminal							Elements, Main, Class, Interface;
+non terminal List<Element> Elements;
+non terminal MainClassDefinition Main;
+non terminal ClassDefinition Class;
+non terminal InterfaceDefinition Interface;
 non terminal							Generics, TypeParameter, TypeParameters, Constraints;
 non terminal							SingleInherits, MultipleInherits, Implements;
-non terminal							ClassElements, InterfaceElements, Instances;
-non terminal							Instance, ClassElement, InterfaceElement;
-non terminal							 Attribute, Signature, Method, Constructor, ConstructorPrelude;
+non terminal List<ClassElement> ClassElements;
+non terminal List<MethodSignatureDefinition> InterfaceElements;
+non terminal Instances, Instance;
+non terminal ClassElement ClassElement;
+non terminal MethodSignatureDefinition InterfaceElement;
+non terminal AttributeDefinition Attribute;
+non terminal Signature Signature;
+non terminal MethodDefinition Method;
+non terminal ConstructorDefinition Constructor;
 non terminal							AccessRight, ElementNature;
 
 /* Associativité et Priorité relative des opérateurs (du moins prioritaire au plus prioritaire) */
@@ -136,6 +147,31 @@ Program ::= /* retrait miniJava
 			Block:block
 			retrait miniJava */
 			{:
+			    System.out.println("Parsing finished, elements found: ");
+			    elements.forEach(x -> System.out.println("- " + x.getName()));
+                System.out.println("");
+                System.out.println("Attempting to collect");
+                Scope<Element> globalScope = new ElementTable();
+                Environment.getInstance().setGlobalContext(globalScope);
+                boolean[] ok = new boolean[1];
+                ok[0] = true;
+
+                elements.forEach(x -> ok[0] = x.collect(globalScope) && ok[0]);
+                if(ok[0]) {
+                    System.out.println("Collect succeeded.");
+                    System.out.println("Attempting to resolve");
+                    elements.forEach(x -> ok[0] = x.resolve(globalScope) && ok[0]);
+                    if(ok[0]) {
+                      System.out.println("Resolve succeeded.");
+                    }
+                    else {
+                      System.out.println("Resolve failed");
+                    }
+                }
+                else {
+                    System.out.println("Collect failed!");
+                }
+
 				/* retrait miniJava
 				System.out.println( "Block named : " + nom );
 				System.out.println( block );
@@ -155,44 +191,56 @@ Program ::= /* retrait miniJava
 		;
 
 /* ajout miniJava : classes, interfaces, attributs, méthodes, constructeurs, etc */
-Elements ::= Main
+Elements ::= Main:main
 		{:
+            List<Element> elts = new ArrayList<>();
+            elts.add(main);
+            RESULT = elts;
 		:}
-		| Interface Elements
+		| Interface:interf Elements:elts
 		{:
+		    elts.add(interf);
+		    RESULT = elts;
 		:}
-		| Class Elements
+		| Class:klass Elements:elts
 		{:
+		    elts.add(klass);
+		    RESULT = elts;
 		:}
-		| UL_Abstrait Class Elements
+		| UL_Abstrait Class:klass Elements:elts
 		{:
+		    klass.setAbstract(true);
+		    elts.add(klass);
+		    RESULT = elts;
 		:}
-		| UL_Definitif Class Elements
+		| UL_Definitif Class:klass Elements:elts
 		{:
+		    klass.setFinal(true);
+		    elts.add(klass);
+		    RESULT = elts;
 		:}
 		;
 
-Interface ::= UL_Interface UL_Identificateur Generics : generics MultipleInherits
+Interface ::= UL_Interface UL_Identificateur:name Generics : generics MultipleInherits
 		UL_Accolade_Ouvrante InterfaceElements : interfaceElements UL_Accolade_Fermante
 		{:
-			RESULT := new Interface(generics, interfaceElements);
+			RESULT = new InterfaceDefinition(name, interfaceElements);
 		:}
 		;
 
-Class ::= UL_Classe UL_Identificateur Generics : generics SingleInherits : superClass Implements : classImplemented
+Class ::= UL_Classe UL_Identificateur:name Generics : generics SingleInherits : superClass Implements : classImplemented
 		UL_Accolade_Ouvrante ClassElements : classElements UL_Accolade_Fermante
 		{:
-			RESULT := new Class(generics , classElements, classImplemented, superClass);
+			RESULT = new ClassDefinition(false, false, name, classElements);
 		:}
 		;
 
 Main ::= UL_Public UL_Classe UL_Classe_Principale
 		UL_Accolade_Ouvrante
 			UL_Public UL_De_Classe UL_Type_Vide UL_Methode_Principale
-			UL_Parenthese_Ouvrante Parameters : Params UL_Parenthese_Fermante Block : block UL_Accolade_Fermante
+			UL_Parenthese_Ouvrante Parameters : params UL_Parenthese_Fermante Block : block UL_Accolade_Fermante
 		{:
-			RESULT := new MainClass(Params, block);
-
+			RESULT = new MainClassDefinition(params, block);
 		:}
 		;
 
@@ -276,17 +324,23 @@ Instance ::= UL_Identificateur
 
 ClassElements ::= /* Lambda */
 		{:
+		    RESULT = new ArrayList<ClassElement>();
 		:}
-		| AccessRight ClassElement ClassElements
+		| AccessRight ClassElement:elt ClassElements:elts
 		{:
+		    elts.add(elt);
+		    RESULT = elts;
 		:}
 		;
 
 InterfaceElements ::= /* Lambda */
 		{:
+		    RESULT = new ArrayList<MethodSignatureDefinition>();
 		:}
-		| InterfaceElement InterfaceElements
+		| InterfaceElement:elt InterfaceElements:elts
 		{:
+		    elts.add(elt);
+		    RESULT = elts;
 		:}
 		;
 
@@ -312,78 +366,124 @@ ElementNature ::=
 		;
 
 ClassElement ::=
-		Attribute
+		Attribute:attr
 		{:
+		    RESULT = attr;
 		:}
 		|
-		Method
+		Method:method
 		{:
+		    RESULT = method;
 		:}
 		|
-		Constructor
+		Constructor:constr
 		{:
+		    RESULT = constr;
 		:}
 		;
 
 InterfaceElement ::=
 		Signature:entete UL_Point_Virgule
 		{:
+		    RESULT = new MethodSignatureDefinition(entete);
 		:}
 		;
 
 Attribute ::=
 		Type:type Identifiant:identifiant UL_Point_Virgule
 		{:
+		    Type _type = identifiant.getRight();
+            if (_type == null) {
+                _type = type;
+            } else {
+                _type = ((PartialType)_type).complete( type );
+            }
+		    RESULT = new AttributeDefinition(false, false, _type, identifiant.getLeft(), null);
 		:}
 		|
 		UL_De_Classe Type:type Identifiant:identifiant UL_Egal Expression:valeur UL_Point_Virgule
 		{:
+		    Type _type = identifiant.getRight();
+            if (_type == null) {
+                _type = type;
+            } else {
+                _type = ((PartialType)_type).complete( type );
+            }
+		    RESULT = new AttributeDefinition(true, false, _type, identifiant.getLeft(), valeur);
 		:}
 		|
 		UL_De_Classe UL_Definitif Type:type Identifiant:identifiant UL_Egal Expression:valeur UL_Point_Virgule
 		{:
+		    Type _type = identifiant.getRight();
+            if (_type == null) {
+                _type = type;
+            } else {
+                _type = ((PartialType)_type).complete( type );
+            }
+		    RESULT = new AttributeDefinition(true, true, _type, identifiant.getLeft(), valeur);
 		:}
 		;
 
 Method ::=
 		Signature:entete Block:corps
 		{:
+		    RESULT = new MethodDefinition(false, false, false, entete, corps);
 		:}
 		|
 		UL_Definitif Signature:entete Block:corps
 		{:
+		    RESULT = new MethodDefinition(false, true, false, entete, corps);
 		:}
 		|
 		UL_De_Classe Signature:entete Block:corps
 		{:
+		    RESULT = new MethodDefinition(true, false, false, entete, corps);
 		:}
 		|
 		UL_De_Classe UL_Definitif Signature:entete Block:corps
 		{:
+		    RESULT = new MethodDefinition(true, true, false, entete, corps);
 		:}
 		|
 		UL_Abstrait Signature:entete UL_Point_Virgule
 		{:
+		    RESULT = new MethodDefinition(false, false, true, entete, null);
 		:}
 		;
 
 Signature ::=
 		Type:type Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante
 		{:
+		    Type _type = identifiant.getRight();
+            if (_type == null) {
+                _type = type;
+            } else {
+                _type = ((PartialType)_type).complete( type );
+            }
+		    RESULT = new Signature(_type, identifiant.getLeft(), parametres);
 		:}
 		|
 		Type:type Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante
 		{:
+		    Type _type = identifiant.getRight();
+            if (_type == null) {
+                _type = type;
+            } else {
+                _type = ((PartialType)_type).complete( type );
+            }
+		    RESULT = new Signature(_type, identifiant.getLeft(), new ArrayList<>());
 		:}
 		;
 
 Constructor ::=
-		UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Block
+		UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Block:block
 		{:
+		    RESULT = new ConstructorDefinition(nom, parametres, block);
 		:}
 		|
-		UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante Block
+		UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante Block:block
 		{:
+		    RESULT = new ConstructorDefinition(nom, new ArrayList<>(), block);
 		:}
 		;
 
@@ -471,15 +571,17 @@ Type ::= Atomique:atomique
 				RESULT = atomique;
 			:}
 		/* ajout miniJava */
-		| Instance:instance
+		| UL_Identificateur:nom //Instance:instance
 			{:
+                RESULT = new InstanceType(nom);
 			:}
+			// TODO: Figure the conflict and correct this
+		| Type:type UL_Crochet_Fermant UL_Crochet_Ouvrant
+		{:
+		    RESULT = new ArrayType(type);
+		:}
 		/* fin ajout miniJava */
 		/* retrait miniJava
-		| UL_Identificateur:nom
-			{:
-				RESULT = new NamedType( nom );
-			:}
 		| UL_Enregistrement UL_Identificateur:nom UL_Accolade_Ouvrante Champs:champs UL_Accolade_Fermante
 			{:
 				RESULT = new RecordType( nom, champs );
@@ -527,7 +629,7 @@ Identifiant ::= UL_Identificateur:nom
 					RESULT = identifiant;
 				:}
 			fin retrait miniJava */
-			| Identifiant:identifiant UL_Crochet_Ouvrant UL_Crochet_Fermant
+			| Identifiant:identifiant UL_Crochet_Fermant UL_Crochet_Ouvrant
 				{:
 					if (identifiant.getRight() == null) {
 						identifiant.setRight( new PartialArrayType() );

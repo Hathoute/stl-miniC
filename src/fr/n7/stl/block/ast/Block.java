@@ -8,7 +8,6 @@ import java.util.List;
 
 import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
-import fr.n7.stl.block.ast.instruction.declaration.FunctionDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
@@ -162,11 +161,6 @@ public class Block {
 		thisFragment.add(_factory.createPush(this.allocatedSize));
 
 		for(Instruction instr : this.instructions) {
-			if(instr instanceof FunctionDeclaration) {
-				callableInst.add(instr);
-				continue;
-			}
-
 			Fragment f = instr.getCode(_factory);
 			thisFragment.append(f);
 

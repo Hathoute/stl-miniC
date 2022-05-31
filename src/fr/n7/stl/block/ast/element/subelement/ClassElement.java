@@ -16,7 +16,7 @@ public interface ClassElement extends Declaration {
      * @return Synthesized Semantics attribute that indicates if the identifier declaration are
      * allowed.
      */
-    public boolean collect(HierarchicalScope<Declaration> _scope);
+    public boolean collect(HierarchicalScope<ClassElement> _scope);
 
     /**
      * Inherited Semantics attribute to transmit the scope, fill it and modify the AST
@@ -24,7 +24,7 @@ public interface ClassElement extends Declaration {
      * @return Synthesized Semantics attribute that indicates if the identifier used in the
      * expression have been previously defined.
      */
-    public boolean resolve(HierarchicalScope<Declaration> _scope);
+    public boolean resolve(HierarchicalScope<ClassElement> _scope);
 
     /**
      * Synthesized Semantics attribute to check that an instruction if well typed.
