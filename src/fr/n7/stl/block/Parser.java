@@ -1907,6 +1907,7 @@ class CUP$Parser$actions {
 		AssignableExpression affectable = (AssignableExpression)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		//@@CUPDBG74
 
+				    RESULT = new ExpressionWrapper(affectable);
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Instruction",3, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2133,6 +2134,7 @@ class CUP$Parser$actions {
 		AssignableExpression affectable = (AssignableExpression)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		//@@CUPDBG88
 
+				    RESULT = new MethodCall(affectable, new ArrayList<Expression>());
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Affectable",15, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2150,6 +2152,7 @@ class CUP$Parser$actions {
 		List<Expression> parametres = (List<Expression>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		//@@CUPDBG89
 
+				    RESULT = new MethodCall(affectable, parametres);
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Affectable",15, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2554,7 +2557,7 @@ class CUP$Parser$actions {
 		List<Expression> parametres = (List<Expression>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		//@@CUPDBG112
 
-					RESULT = new MethodCall( nom, parametres );
+					RESULT = new MethodCall(fonction, parametres );
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Expression",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2570,7 +2573,7 @@ class CUP$Parser$actions {
 		//@@CUPDBG113
 
 					List<Expression> _parametres = new ArrayList<>();
-					RESULT = new MethodCall( nom, _parametres );
+					RESULT = new MethodCall(fonction, _parametres );
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Expression",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }

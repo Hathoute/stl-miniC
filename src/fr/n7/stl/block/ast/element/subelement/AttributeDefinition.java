@@ -58,6 +58,11 @@ public class AttributeDefinition implements ClassElement {
     }
 
     @Override
+    public int getOffset() {
+        return 0;
+    }
+
+    @Override
     public Fragment getCode(TAMFactory _factory) {
         return null;
     }

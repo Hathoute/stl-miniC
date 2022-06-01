@@ -5,14 +5,18 @@ package fr.n7.stl.block.ast.expression;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.element.subelement.MethodDefinition;
 import fr.n7.stl.block.ast.expression.accessible.FieldAccess;
 import fr.n7.stl.block.ast.expression.accessible.IdentifierAccess;
 import fr.n7.stl.block.ast.expression.accessible.VariableAccess;
+import fr.n7.stl.block.ast.expression.assignable.AssignableExpression;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.type.AtomicType;
+import fr.n7.stl.block.ast.type.MethodType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -23,7 +27,7 @@ import fr.n7.stl.tam.ast.TAMFactory;
  * @author Marc Pantel
  *
  */
-public class MethodCall implements Expression {
+public class MethodCall implements Expression, AssignableExpression {
 
 	protected Expression method;
 
@@ -72,15 +76,6 @@ public class MethodCall implements Expression {
 	@Override
 	public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
 		boolean ok = method.fullResolve(_scope);
-		if(method instanceof FieldAccess) {
-
-		}
-		else if(method instanceof IdentifierAccess) {
-
-		}
-		else {
-			ok = false;
-		}
 
 		for(Expression arg : arguments) {
 			ok = arg.fullResolve(_scope) && ok;
@@ -94,7 +89,18 @@ public class MethodCall implements Expression {
 	 */
 	@Override
 	public Type getType() {
-		return function.getType();
+		Type expType = method.getType();
+		List<Type> parameterTypes = this.arguments.stream()
+				.map(Expression::getType)
+				.collect(Collectors.toList());
+		if(expType instanceof MethodType mt) {
+			MethodType template = new MethodType(null, parameterTypes, null);
+			if(template.compatibleWith(mt)) {
+				return mt.getReturnType();
+			}
+		}
+
+		return AtomicType.ErrorType;
 	}
 
 	/* (non-Javadoc)

@@ -4,9 +4,15 @@
 package fr.n7.stl.block.ast.type;
 
 import fr.n7.stl.block.ast.Environment;
+import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.element.Element;
 import fr.n7.stl.block.ast.element.subelement.ClassElement;
+import fr.n7.stl.block.ast.element.subelement.MethodDefinition;
+import fr.n7.stl.block.ast.element.subelement.MethodSignatureDefinition;
+import fr.n7.stl.util.BlockSemanticsError;
 import fr.n7.stl.util.Logger;
+
+import java.util.List;
 
 /**
  * Implementation of the Abstract Syntax Tree node for a named type.
@@ -16,17 +22,20 @@ import fr.n7.stl.util.Logger;
  */
 public class MethodType implements Type {
 
-	private ClassElement definition;
-	public String name;
+	protected ClassElement definition;
+	protected Type returnType;
+	protected List<Type> parameterTypes;
 
-	public MethodType(String _name) {
-		this.name = _name;
-		this.definition = null;
-	}
-
-	public MethodType(ClassElement _declaration) {
+	public MethodType(ClassElement _declaration, List<Type> parameterTypes, Type returnType) {
 		this.definition = _declaration;
-		this.name = _declaration.getName();
+		this.parameterTypes = parameterTypes;
+		this.returnType = returnType;
+
+		if(!(definition instanceof MethodDefinition
+			|| definition instanceof MethodSignatureDefinition)) {
+			throw new IllegalArgumentException("Cannot initialize MethodType:" +
+					" argument must be of type Method(Signature)Definition");
+		}
 	}
 
 	/*
@@ -36,9 +45,25 @@ public class MethodType implements Type {
 	 */
 	@Override
 	public boolean equalsTo(Type _other) {
-		_other = Type.getRealType(_other);
+		if(!(_other instanceof MethodType mt)) {
+			return false;
+		}
 
-		return Type.getRealType(this).equalsTo(_other);
+		if(mt.parameterTypes.size() != this.parameterTypes.size()) {
+			return false;
+		}
+
+		if(mt.returnType != null && !this.returnType.equalsTo(mt.returnType)) {
+			return false;
+		}
+
+		for (int i = 0; i < this.parameterTypes.size(); i++) {
+			if(!this.parameterTypes.get(i).equalsTo(mt.parameterTypes.get(i))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/*
@@ -48,9 +73,25 @@ public class MethodType implements Type {
 	 */
 	@Override
 	public boolean compatibleWith(Type _other) {
-		_other = Type.getRealType(_other);
+		if(!(_other instanceof MethodType mt)) {
+			return false;
+		}
 
-		return Type.getRealType(this).compatibleWith(_other);
+		if(mt.parameterTypes.size() != this.parameterTypes.size()) {
+			return false;
+		}
+
+		if(mt.returnType != null && !this.returnType.compatibleWith(mt.returnType)) {
+			return false;
+		}
+
+		for (int i = 0; i < this.parameterTypes.size(); i++) {
+			if(!this.parameterTypes.get(i).compatibleWith(mt.parameterTypes.get(i))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/*
@@ -60,9 +101,7 @@ public class MethodType implements Type {
 	 */
 	@Override
 	public Type merge(Type _other) {
-		_other = Type.getRealType(_other);
-
-		return Type.getRealType(this).merge(_other);
+		throw new SemanticsUndefinedException("Illegal access to merge: cannot merge MethodType");
 	}
 
 	/*
@@ -82,7 +121,7 @@ public class MethodType implements Type {
 	 */
 	@Override
 	public String toString() {
-		return this.name;
+		return this.definition.getName();
 	}
 
 	/*
@@ -92,18 +131,11 @@ public class MethodType implements Type {
 	 */
 	@Override
 	public boolean resolve() {
-		if (this.definition == null) {
-			Element base = Environment.getInstance().getElement(name);
-			if (base != null) {
-				this.definition = base;
-				return true;
-			} else {
-				Logger.error("The identifier " + this.name + " has not been found.");
-				return false;
-			}
-		} else {
-			return true;
-		}
+		return this.returnType.resolve() && this.parameterTypes.stream().allMatch(Type::resolve);
+	}
+
+	public Type getReturnType() {
+		return this.returnType;
 	}
 
 }
