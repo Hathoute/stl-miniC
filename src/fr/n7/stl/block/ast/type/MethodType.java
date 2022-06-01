@@ -5,9 +5,7 @@ package fr.n7.stl.block.ast.type;
 
 import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.element.Element;
-import fr.n7.stl.block.ast.instruction.declaration.TypeDeclaration;
-import fr.n7.stl.block.ast.scope.Declaration;
-import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.element.subelement.ClassElement;
 import fr.n7.stl.util.Logger;
 
 /**
@@ -16,18 +14,17 @@ import fr.n7.stl.util.Logger;
  * @author Marc Pantel
  *
  */
-public class InstanceType implements Type {
+public class MethodType implements Type {
 
-	private Element definition;
-
+	private ClassElement definition;
 	public String name;
 
-	public InstanceType(String _name) {
+	public MethodType(String _name) {
 		this.name = _name;
 		this.definition = null;
 	}
 
-	public InstanceType(Element _declaration) {
+	public MethodType(ClassElement _declaration) {
 		this.definition = _declaration;
 		this.name = _declaration.getName();
 	}
@@ -68,19 +65,6 @@ public class InstanceType implements Type {
 		return Type.getRealType(this).merge(_other);
 	}
 
-	/**
-	 * Provide the target type of the named type (i.e. type associated to the name).
-	 * 
-	 * @return Type associated to the name.
-	 */
-	public Type getType() {
-		return this.definition.getType();
-	}
-
-	public Element getElement() {
-		return this.definition;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -88,7 +72,7 @@ public class InstanceType implements Type {
 	 */
 	@Override
 	public int length() {
-		return this.definition.getType().length();
+		return 1;
 	}
 
 	/*

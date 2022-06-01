@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package fr.n7.stl.block.ast.expression.allocation;
 
@@ -11,32 +11,41 @@ import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Library;
 import fr.n7.stl.tam.ast.TAMFactory;
 
+import java.util.List;
+
 /**
  * @author Marc Pantel
  *
  */
-public class PointerAllocation implements Expression {
+public class ObjectAllocation implements Expression {
 
 	protected Type element;
+	protected List<Expression> parameters;
 
-	public PointerAllocation(Type _element) {
+	public ObjectAllocation(Type _element, List<Expression> parameters) {
 		this.element = _element;
+		this.parameters = parameters;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "new " + this.element; 
+		return "new " + this.element;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see fr.n7.stl.block.ast.expression.Expression#collect(fr.n7.stl.block.ast.scope.Scope)
 	 */
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
-		return this.element.resolve();
+		boolean ok = this.element.resolve();
+		for (Expression expr : parameters) {
+			ok = expr.collectAndBackwardResolve(_scope) && ok;
+		}
+
+		return ok;
 	}
 
 	/* (non-Javadoc)

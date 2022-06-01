@@ -38,9 +38,11 @@ public class AttributeDefinition implements ClassElement {
     @Override
     public boolean resolve(HierarchicalScope<ClassElement> _scope) {
         boolean ok = this.type.resolve();
-        SymbolTable<Declaration> innerScope = new SymbolTable<>();
-        ok = this.value.collectAndBackwardResolve(innerScope) && ok;
-        ok = this.value.fullResolve(innerScope) && ok;
+        if(value != null) {
+            SymbolTable<Declaration> innerScope = new SymbolTable<>();
+            ok = this.value.collectAndBackwardResolve(innerScope) && ok;
+            ok = this.value.fullResolve(innerScope) && ok;
+        }
 
         return ok;
     }

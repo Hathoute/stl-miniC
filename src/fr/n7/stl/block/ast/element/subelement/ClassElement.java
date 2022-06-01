@@ -41,6 +41,8 @@ public interface ClassElement extends Declaration {
      */
     public int allocateMemory(Register _register, int _offset);
 
+    public int getOffset();
+
     /**
      * Inherited Semantics attribute to build the nodes of the abstract syntax tree for the generated TAM code.
      * Synthesized Semantics attribute that provide the generated TAM code.

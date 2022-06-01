@@ -41,8 +41,11 @@ public abstract class AbstractClassDefinition implements Element {
         }
         _scope.register(this);
 
+        boolean ok = true;
         elementsScope = new SymbolTable<>(elementsScope);
-        boolean ok = elements.stream().allMatch(x -> x.collect(elementsScope));
+        for(ClassElement ce : elements) {
+            ok = ce.collect(elementsScope) && ok;
+        }
         Environment.getInstance().setCurrentElement(null);
 
         return ok;
@@ -51,7 +54,11 @@ public abstract class AbstractClassDefinition implements Element {
     @Override
     public boolean resolve(Scope<Element> _scope) {
         Environment.getInstance().setCurrentElement(this);
-        boolean ok = elements.stream().allMatch(x -> x.resolve(elementsScope));
+        boolean ok = true;
+        elementsScope = new SymbolTable<>(elementsScope);
+        for(ClassElement ce : elements) {
+            ok = ce.resolve(elementsScope) && ok;
+        }
         Environment.getInstance().setCurrentElement(null);
 
         return ok;

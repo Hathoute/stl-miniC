@@ -1,11 +1,12 @@
 package fr.n7.stl.block.ast.expression;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
+import fr.n7.stl.block.ast.element.subelement.ClassElement;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.AtomicType;
+import fr.n7.stl.block.ast.type.InstanceType;
 import fr.n7.stl.block.ast.type.Type;
-import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
 import fr.n7.stl.util.Logger;
 
 /**
@@ -18,7 +19,7 @@ public abstract class AbstractField implements Expression {
 
     protected Expression record;
     protected String name;
-    protected FieldDeclaration field;
+    protected ClassElement field;
 
     /**
      * Construction for the implementation of a record field access expression Abstract Syntax Tree node.
@@ -64,21 +65,20 @@ public abstract class AbstractField implements Expression {
         }
 
         Type type = this.record.getType();
-        type = Type.getRealType(type);
 
-        /*if (type instanceof RecordType) {
-            RecordType recordType = (RecordType) type;
-            if (recordType.contains(name)) {
-                field = recordType.get(name);
+        if (type instanceof InstanceType) {
+            InstanceType instanceType = (InstanceType) type;
+            field = instanceType.getElement().getContext().get(name);
+            if (field != null) {
                 return field.getType();
             }
             else {
-                Logger.error("Type " + ((RecordType) type).getName() + " has no field named \"" + name + "\"");
+                Logger.error("Type " + instanceType.getElement().getName() + " has no field named \"" + name + "\"");
             }
         }
         else {
-            Logger.error("" + this.record.toString() + " is not a Record.");
-        }*/
+            Logger.error("" + this.record.toString() + " is not a valid Type.");
+        }
 
         return AtomicType.ErrorType;
     }

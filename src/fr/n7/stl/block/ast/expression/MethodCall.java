@@ -8,6 +8,9 @@ import java.util.List;
 
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.element.subelement.MethodDefinition;
+import fr.n7.stl.block.ast.expression.accessible.FieldAccess;
+import fr.n7.stl.block.ast.expression.accessible.IdentifierAccess;
+import fr.n7.stl.block.ast.expression.accessible.VariableAccess;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
@@ -20,32 +23,17 @@ import fr.n7.stl.tam.ast.TAMFactory;
  * @author Marc Pantel
  *
  */
-public class FunctionCall implements Expression {
+public class MethodCall implements Expression {
 
-	/**
-	 * Name of the called function.
-	 * TODO : Should be an expression.
-	 */
-	protected String name;
-	
-	/**
-	 * Declaration of the called function after name resolution.
-	 * TODO : Should rely on the VariableUse class.
-	 */
-	protected MethodDefinition function;
-	
-	/**
-	 * List of AST nodes that computes the values of the parameters for the function call.
-	 */
+	protected Expression method;
+
+	protected MethodDefinition definition;
+
 	protected List<Expression> arguments;
-	
-	/**
-	 * @param _name : Name of the called function.
-	 * @param _arguments : List of AST nodes that computes the values of the parameters for the function call.
-	 */
-	public FunctionCall(String _name, List<Expression> _arguments) {
-		this.name = _name;
-		this.function = null;
+
+	public MethodCall(Expression method, List<Expression> _arguments) {
+		this.method = method;
+		this.definition = null;
 		this.arguments = _arguments;
 	}
 
@@ -54,7 +42,7 @@ public class FunctionCall implements Expression {
 	 */
 	@Override
 	public String toString() {
-		String _result = this.name + "(";
+		String _result = this.method.toString() + "(";
 		Iterator<Expression> _iter = this.arguments.iterator();
 		if (_iter.hasNext()) {
 			_result += _iter.next();
@@ -70,7 +58,7 @@ public class FunctionCall implements Expression {
 	 */
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
-		boolean ok = true;
+		boolean ok = method.collectAndBackwardResolve(_scope);
 		for(Expression arg : arguments) {
 			ok = arg.collectAndBackwardResolve(_scope) && ok;
 		}
@@ -83,16 +71,12 @@ public class FunctionCall implements Expression {
 	 */
 	@Override
 	public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
-		boolean ok = true;
-		if(_scope.knows(name)) {
-			Declaration decl = _scope.get(name);
-			/*if(decl instanceof FunctionDeclaration) {
-				function = (FunctionDeclaration) decl;
-				ok = function.fullResolve(_scope);
-			}
-			else {
-				ok = false;
-			}*/
+		boolean ok = method.fullResolve(_scope);
+		if(method instanceof FieldAccess) {
+
+		}
+		else if(method instanceof IdentifierAccess) {
+
 		}
 		else {
 			ok = false;
@@ -123,7 +107,7 @@ public class FunctionCall implements Expression {
 		for(; i >= 0; i--) {
 			thisCode.append(this.arguments.get(i).getCode(_factory));
 		}
-		thisCode.add(_factory.createCall(this.name, Register.LB));
+		//thisCode.add(_factory.createCall(this.name, Register.LB));
 		return thisCode;
 	}
 
