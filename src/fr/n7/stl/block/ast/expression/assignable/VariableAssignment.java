@@ -6,12 +6,14 @@ package fr.n7.stl.block.ast.expression.assignable;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.expression.AbstractIdentifier;
 import fr.n7.stl.block.ast.instruction.declaration.ConstantDeclaration;
+import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
@@ -22,7 +24,7 @@ import fr.n7.stl.util.Logger;
  */
 public class VariableAssignment extends AbstractIdentifier implements AssignableExpression {
 	
-	protected VariableDeclaration declaration;
+	protected Declaration declaration;
 
 	/**
 	 * Creates a variable assignment expression Abstract Syntax Tree node.
@@ -47,8 +49,8 @@ public class VariableAssignment extends AbstractIdentifier implements Assignable
 	public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
 		if (((HierarchicalScope<Declaration>)_scope).knows(this.name)) {
 			Declaration _declaration = _scope.get(this.name);
-			if (_declaration instanceof VariableDeclaration) {
-				this.declaration = ((VariableDeclaration) _declaration);
+			if (_declaration instanceof VariableDeclaration || _declaration instanceof ParameterDeclaration) {
+				this.declaration = _declaration;
 				return true;
 			}
 			else if (_declaration instanceof ConstantDeclaration) {
@@ -82,8 +84,20 @@ public class VariableAssignment extends AbstractIdentifier implements Assignable
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
+		Register register = null;
+		int offset = -1;
+
+		if(declaration instanceof VariableDeclaration) {
+			register = ((VariableDeclaration) declaration).getRegister();
+			offset = ((VariableDeclaration) declaration).getOffset();
+		}
+		else if(declaration instanceof ParameterDeclaration) {
+			register = Register.LB;
+			offset = ((ParameterDeclaration) declaration).getOffset();
+		}
+
 		Fragment fragment = _factory.createFragment();
-		fragment.add(_factory.createLoadA(this.declaration.getRegister(), this.declaration.getOffset()));
+		fragment.add(_factory.createLoadA(register, offset));
 
 		return fragment;
 	}

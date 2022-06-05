@@ -82,7 +82,7 @@ public class TestCompiler {
 
     private String executeCode() throws IOException {
         String cmd = "java -jar ./tools/runtam.jar " + outFile;
-        String[] args = new String[] {"/mnt/n7fs/java/jdk-12.0.1/bin/java", "-jar", "./tools/runtam.jar", outFile};
+        String[] args = new String[] {"java", "-jar", "./tools/runtam.jar", outFile};
         ProcessBuilder pb = new ProcessBuilder(args);
         pb.redirectErrorStream(true);
         Process proc = pb.start();

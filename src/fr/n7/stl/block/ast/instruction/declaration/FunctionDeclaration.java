@@ -114,7 +114,6 @@ public class FunctionDeclaration implements Instruction, Declaration {
 		Environment.getInstance().setCurrentFunction(this);
 
 		HierarchicalScope<Declaration> funcScope = new SymbolTable(_scope);
-		int offset = 0;
 		boolean result = true;
 		for(ParameterDeclaration decl : parameters) {
 			if(!funcScope.accepts(decl)) {
@@ -123,8 +122,6 @@ public class FunctionDeclaration implements Instruction, Declaration {
 				continue;
 			}
 			funcScope.register(decl);
-			offset -= decl.getType().length();
-			decl.setOffset(offset);
 		}
 		_scope.register(this);
 		result = result && body.collect(funcScope);
@@ -140,6 +137,10 @@ public class FunctionDeclaration implements Instruction, Declaration {
 	@Override
 	public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
 		Environment.getInstance().setCurrentFunction(this);
+		type.resolve(_scope);
+		for(ParameterDeclaration decl : parameters) {
+			decl.getType().resolve(_scope);
+		}
 		boolean result = body.resolve(_scope);
 		Environment.getInstance().setCurrentFunction(null);
 		return result;
@@ -155,6 +156,13 @@ public class FunctionDeclaration implements Instruction, Declaration {
 		boolean result = code == CheckReturnCode.FINISHED
 				|| (type == AtomicType.VoidType && code == CheckReturnCode.CONTINUE);
 		result = result && body.checkType();
+
+		int offset = 0;
+		for(ParameterDeclaration decl : parameters) {
+			offset -= decl.getType().length();
+			decl.setOffset(offset);
+		}
+
 		Environment.getInstance().setCurrentFunction(null);
 		return result;
 	}

@@ -1,4 +1,25 @@
 test {
-    const int b = 1;
-    b = 2;
+    typedef struct A { int v; } A;
+
+    void A_setV(A this, int _v) {
+        this.v = _v;
+    }
+
+    int A_getV(A* this) {
+        return this->v;
+    }
+
+    A* A_constructor() {
+        A *a = new A();
+        a->v = -1;
+        return a;
+    }
+
+    A* a1 = A_constructor();
+    print a1->v;
+    print A_getV(a1);
+    a1->v = 2;
+    print a1->v;
+    void f = A_setV(*a1, 3);
+    print A_getV(a1);
 }

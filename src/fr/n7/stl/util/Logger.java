@@ -15,7 +15,7 @@ public class Logger {
 	
 	public static void error(String _message) {
 		System.err.println( "Error : " + _message);
-		//throw new BlockSemanticsError();
+		throw new BlockSemanticsError();
 	}
 
 }
