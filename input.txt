@@ -1,5 +1,6 @@
 class A {
 	public int v;
+	public int j;
 	
 	public void setV(int _v) {
 		this.v = _v;
@@ -11,6 +12,7 @@ class A {
 	
 	public A() {
 	    this.v = 1;
+	    this.j = 2;
 	}
 	
 }
@@ -20,9 +22,13 @@ public class Main {
 	public static void main(String args[]) {
 		A a1 = new A();
 		print a1.v;
+		print a1.j;
+		a1.setV(2);
 		print a1.getV();
 		a1.v = 2;
+		a1.j = 4;
 		print a1.v;
+		print a1.j;
 		a1.setV( 3 );
 		print a1.getV();
 		print a1.getV();

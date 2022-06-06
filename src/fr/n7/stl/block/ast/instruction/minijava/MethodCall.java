@@ -4,6 +4,7 @@ import fr.n7.stl.block.ast.expression.Expression;
 import fr.n7.stl.block.ast.expression.assignable.AssignableExpression;
 import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
+import fr.n7.stl.block.ast.minijava.subelement.MethodDefinition;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.AtomicType;
@@ -23,6 +24,8 @@ public class MethodCall implements AssignableExpression, Instruction {
 
     protected Expression object;
     protected List<Expression> parameters;
+
+    protected MethodDefinition methodDefinition;
 
     public MethodCall(Expression object, List<Expression> parameters) {
         this.object = object;
@@ -64,8 +67,9 @@ public class MethodCall implements AssignableExpression, Instruction {
         List<Type> parameterTypes = parameters.stream().map(Expression::getType).collect(Collectors.toList());
         if(objectType instanceof MethodType) {
             MethodType mt = (MethodType) objectType;
+            methodDefinition = mt.getDefinition();
             if(!mt.compatibleWithParameters(parameterTypes)) {
-                Logger.error("No overload existing for method '" + mt.getDefinition().getName() + "'" +
+                Logger.error("No overload existing for method '" + methodDefinition.getName() + "'" +
                         " that takes parameters: " + Helper.formatParameters(parameterTypes));
                 return AtomicType.ErrorType;
             }
@@ -83,7 +87,15 @@ public class MethodCall implements AssignableExpression, Instruction {
 
     @Override
     public Fragment getCode(TAMFactory _factory) {
-        throw new RuntimeException("Method is not defined");
+        Fragment thisCode = _factory.createFragment();
+        int i = this.parameters.size() - 1;
+        for(; i >= 0; i--) {
+            thisCode.append(this.parameters.get(i).getCode(_factory));
+        }
+        // TODO: Return here after implementing static methods.
+        thisCode.append(this.object.getCode(_factory)); // this_call as calling convention
+        thisCode.add(_factory.createCall(this.methodDefinition.getName(), Register.LB));
+        return thisCode;
     }
 
     @Override

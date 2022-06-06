@@ -3,10 +3,14 @@
  */
 package fr.n7.stl.block.ast.expression.minijava;
 
-import fr.n7.stl.block.ast.expression.AbstractField;
 import fr.n7.stl.block.ast.expression.AbstractObjectField;
 import fr.n7.stl.block.ast.expression.Expression;
+import fr.n7.stl.block.ast.minijava.subelement.AttributeDefinition;
+import fr.n7.stl.block.ast.minijava.subelement.MethodDefinition;
+import fr.n7.stl.block.ast.type.RecordType;
+import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
 /**
@@ -30,7 +34,33 @@ public class ObjectFieldAccess extends AbstractObjectField implements Expression
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new RuntimeException("Method not implemented.");
+		Fragment objCode = this.object.getCode(_factory);
+
+		if (field instanceof AttributeDefinition) {
+			RecordType r = element.getAssociatedRecord();
+			FieldDeclaration fd = r.get(name);
+
+			int totalLen = r.length();
+			int offset = fd.getOffset();
+			int fieldLen = fd.getType().length();
+
+			int topRemove = totalLen - offset - fieldLen;
+			int bottomRemove = offset;
+
+			objCode.add(_factory.createLoadI(r.length()));
+
+			if(topRemove > 0) {
+				objCode.add(_factory.createPop(0, topRemove));
+			}
+			if(bottomRemove > 0) {
+				objCode.add(_factory.createPop(fieldLen, bottomRemove));
+			}
+
+			return objCode;
+		}
+
+		// For methods, we let MethodCall generate code.
+		return objCode;
 	}
 
 	@Override

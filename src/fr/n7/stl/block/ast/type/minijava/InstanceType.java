@@ -6,6 +6,7 @@ import fr.n7.stl.block.ast.minijava.subelement.ClassElement;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.AtomicType;
+import fr.n7.stl.block.ast.type.PointerType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.util.Logger;
 
@@ -21,6 +22,13 @@ public class InstanceType implements Type {
 
     @Override
     public boolean equalsTo(Type _other) {
+        if (_other instanceof PointerType && this.typeDefinition instanceof ClassDefinition) {
+            PointerType pt = (PointerType) _other;
+            ClassDefinition cd = (ClassDefinition) this.typeDefinition;
+
+            return pt.getPointedType().equalsTo(cd.getAssociatedRecord());
+        }
+
         return _other instanceof InstanceType && this.typeDefinition == ((InstanceType) _other).typeDefinition;
     }
 
@@ -92,5 +100,9 @@ public class InstanceType implements Type {
         }
 
         throw new RuntimeException("Cannot find class element " + name + " in type " + this.typeDefinition);
+    }
+
+    public Element getTypeDefinition() {
+        return typeDefinition;
     }
 }

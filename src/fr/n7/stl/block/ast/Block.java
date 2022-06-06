@@ -3,15 +3,20 @@
  */
 package fr.n7.stl.block.ast;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import fr.n7.stl.block.ast.expression.value.NullValue;
 import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.instruction.declaration.FunctionDeclaration;
+import fr.n7.stl.block.ast.instruction.minijava.MethodReturn;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -193,6 +198,15 @@ public class Block {
 		}
 
 		return thisFragment;
+	}
+
+	public <T extends Block> T toSpecificBlock(Class<T> klass) {
+		try {
+			return klass.getConstructor(List.class)
+					.newInstance(new ArrayList<>(this.instructions));
+		} catch (Exception e) {
+			throw new RuntimeException("toSpecificBlock raised exception: " + e);
+		}
 	}
 
 }

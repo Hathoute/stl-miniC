@@ -1,14 +1,11 @@
 package fr.n7.stl.block.ast.expression;
 
-import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.minijava.Element;
 import fr.n7.stl.block.ast.minijava.subelement.ClassElement;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.AtomicType;
-import fr.n7.stl.block.ast.type.RecordType;
 import fr.n7.stl.block.ast.type.Type;
-import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
 import fr.n7.stl.block.ast.type.minijava.InstanceType;
 import fr.n7.stl.block.ast.type.minijava.ThisType;
 import fr.n7.stl.util.Logger;
@@ -21,12 +18,14 @@ import fr.n7.stl.util.Logger;
  */
 public abstract class AbstractObjectField implements Expression {
 
-    protected Expression record;
+    protected Expression object;
     protected String name;
+
+    protected Element element;
     protected ClassElement field;
 
     public AbstractObjectField(Expression _record, String _name) {
-        this.record = _record;
+        this.object = _record;
         this.name = _name;
     }
 
@@ -35,7 +34,7 @@ public abstract class AbstractObjectField implements Expression {
      */
     @Override
     public String toString() {
-        return this.record + "." + this.name;
+        return this.object + "." + this.name;
     }
 
     /* (non-Javadoc)
@@ -43,7 +42,7 @@ public abstract class AbstractObjectField implements Expression {
      */
     @Override
     public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
-        return this.record.collectAndBackwardResolve(_scope);
+        return this.object.collectAndBackwardResolve(_scope);
     }
 
     /* (non-Javadoc)
@@ -51,7 +50,7 @@ public abstract class AbstractObjectField implements Expression {
      */
     @Override
     public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
-        return this.record.fullResolve(_scope);
+        return this.object.fullResolve(_scope);
     }
 
     /**
@@ -63,7 +62,7 @@ public abstract class AbstractObjectField implements Expression {
             return field.getType();
         }
 
-        Type type = this.record.getType();
+        Type type = this.object.getType();
         type = Type.getRealType(type);
 
         if(type instanceof ThisType) {
@@ -72,6 +71,7 @@ public abstract class AbstractObjectField implements Expression {
 
         if (type instanceof InstanceType) {
             InstanceType instanceType = (InstanceType) type;
+            this.element = instanceType.getTypeDefinition();
             if (instanceType.contains(name)) {
                 field = instanceType.get(name);
                 return field.getType();
@@ -81,7 +81,7 @@ public abstract class AbstractObjectField implements Expression {
             }
         }
         else {
-            Logger.error("'" + this.record.toString() + "' is not an InstanceType.");
+            Logger.error("'" + this.object.toString() + "' is not an InstanceType.");
         }
 
         return AtomicType.ErrorType;

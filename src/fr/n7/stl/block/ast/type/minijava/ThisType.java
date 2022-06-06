@@ -29,7 +29,7 @@ public class ThisType implements Type {
 
     @Override
     public int length() {
-        throw new RuntimeException("Method is not defined");
+        return 1;
     }
 
     @Override

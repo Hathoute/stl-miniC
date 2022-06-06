@@ -11,6 +11,7 @@ import fr.n7.stl.block.ast.instruction.declaration.FunctionDeclaration;
 import fr.n7.stl.block.ast.minijava.subelement.MethodDefinition;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -25,6 +26,7 @@ import fr.n7.stl.util.Logger;
 public class MethodReturn implements Instruction {
 
 	protected Expression value;
+	protected MethodDefinition method;
 
 	public MethodReturn(Expression _value) {
 		this.value = _value;
@@ -35,7 +37,7 @@ public class MethodReturn implements Instruction {
 	 */
 	@Override
 	public String toString() {
-		return "return " + this.value + ";\n";
+		return "return " + (this.value == null ? "" : this.value) + ";\n";
 	}
 	
 	/* (non-Javadoc)
@@ -43,7 +45,7 @@ public class MethodReturn implements Instruction {
 	 */
 	@Override
 	public boolean collectAndBackwardResolve(HierarchicalScope<Declaration> _scope) {
-		return value.collectAndBackwardResolve(_scope);
+		return value == null || value.collectAndBackwardResolve(_scope);
 	}
 	
 	/* (non-Javadoc)
@@ -51,7 +53,7 @@ public class MethodReturn implements Instruction {
 	 */
 	@Override
 	public boolean fullResolve(HierarchicalScope<Declaration> _scope) {
-		return value.fullResolve(_scope);
+		return value == null || value.fullResolve(_scope);
 	}
 
 	/* (non-Javadoc)
@@ -64,6 +66,8 @@ public class MethodReturn implements Instruction {
 			Logger.error("Found return outside the body of a function.");
 			return false;
 		}
+
+		method = (MethodDefinition) Environment.getInstance().getCurrentClassElement();
 		return true;
 	}
 
@@ -80,20 +84,23 @@ public class MethodReturn implements Instruction {
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		FunctionDeclaration func = Environment.getInstance().getCurrentFunction();
-		Type returnType = func.getType();
-		int paramSize = func.getParameters().stream()
+		Type returnType = method.getSignature().getType();
+		int paramSize = method.getSignature().getParameters().stream()
 				.mapToInt(x -> x.getType().length())
 				.sum();
 
-		Fragment result = this.value.getCode(_factory);
+		// TODO: Return here when implementing static methods
+		paramSize = paramSize + 1;	// this as parameter.
+
+		Fragment result = this.value == null ? _factory.createFragment() :  this.value.getCode(_factory);
 		result.add(_factory.createReturn(returnType.length(), paramSize));
 		return result;
 	}
 
 	@Override
 	public CheckReturnCode checkReturnType(Type type) {
-		return value.getType().equalsTo(type) ? CheckReturnCode.FINISHED : CheckReturnCode.TYPE_MISMATCH;
+		return (value == null && type.equalsTo(AtomicType.VoidType) ||
+				value.getType().equalsTo(type)) ? CheckReturnCode.FINISHED : CheckReturnCode.TYPE_MISMATCH;
 	}
 
 }

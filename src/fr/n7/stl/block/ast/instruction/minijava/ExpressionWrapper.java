@@ -41,13 +41,14 @@ public class ExpressionWrapper implements Instruction {
 
     @Override
     public int allocateMemory(Register _register, int _offset) {
-        // Make sure that memory allocated by the expression is removed by this wrapper
-        throw new RuntimeException("Method is not defined");
+        return 0;
     }
 
     @Override
     public Fragment getCode(TAMFactory _factory) {
-        throw new RuntimeException("Method is not defined");
+        Fragment expr = expression.getCode(_factory);
+        expr.add(_factory.createPop(0, expression.getType().length()));
+        return expr;
     }
 
     @Override

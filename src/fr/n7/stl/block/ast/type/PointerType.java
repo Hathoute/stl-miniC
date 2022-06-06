@@ -6,6 +6,7 @@ package fr.n7.stl.block.ast.type;
 import fr.n7.stl.block.ast.SemanticsUndefinedException;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.type.minijava.InstanceType;
 
 /**
  * Implementation of the Abstract Syntax Tree node for a pointer type.
@@ -33,6 +34,9 @@ public class PointerType implements Type {
 
 		if(_other instanceof PointerType) {
 			return this.element.equalsTo(((PointerType) _other).element);
+		}
+		else if(_other instanceof InstanceType) {
+			return _other.equalsTo(this);
 		}
 
 		return false;

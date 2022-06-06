@@ -6,6 +6,10 @@ package fr.n7.stl.block.ast.expression.minijava;
 import fr.n7.stl.block.ast.expression.AbstractField;
 import fr.n7.stl.block.ast.expression.AbstractObjectField;
 import fr.n7.stl.block.ast.expression.assignable.AssignableExpression;
+import fr.n7.stl.block.ast.minijava.subelement.AttributeDefinition;
+import fr.n7.stl.block.ast.minijava.subelement.MethodDefinition;
+import fr.n7.stl.block.ast.type.RecordType;
+import fr.n7.stl.block.ast.type.declaration.FieldDeclaration;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Library;
 import fr.n7.stl.tam.ast.TAMFactory;
@@ -31,7 +35,24 @@ public class ObjectFieldAssignment extends AbstractObjectField implements Assign
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new RuntimeException("Method not implemented");
+		Fragment objCode = this.object.getCode(_factory);
+		if (!(this.object instanceof ThisAccess)) {
+			objCode.add(_factory.createLoadI(1));
+		}
+
+		if (this.field instanceof AttributeDefinition) {
+			RecordType r = element.getAssociatedRecord();
+			FieldDeclaration fd = r.get(name);
+
+			if(fd.getOffset() > 0) {
+				objCode.add(_factory.createLoadL(fd.getOffset()));
+				objCode.add(Library.IAdd);
+			}
+
+			return objCode;
+		}
+
+		return objCode;
 	}
 
 	@Override

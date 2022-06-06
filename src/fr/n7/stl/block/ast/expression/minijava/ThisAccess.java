@@ -11,6 +11,7 @@ import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.block.ast.type.minijava.ThisType;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
 public class ThisAccess implements AssignableExpression {
@@ -46,6 +47,12 @@ public class ThisAccess implements AssignableExpression {
 
     @Override
     public Fragment getCode(TAMFactory _factory) {
-        throw new RuntimeException("Method is not defined");
+        // TODO: Return here when implementing overloading of constructor
+        boolean isConstructor = Environment.getInstance().getCurrentClassElement() instanceof ConstructorDefinition;
+
+        Fragment thisCode = _factory.createFragment();
+        thisCode.add(_factory.createLoadA(Register.LB, isConstructor ? 3 : -1));
+        thisCode.add(_factory.createLoadI(1));
+        return thisCode;
     }
 }

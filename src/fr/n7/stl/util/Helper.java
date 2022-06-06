@@ -4,6 +4,11 @@ import fr.n7.stl.block.ast.Block;
 import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
+import fr.n7.stl.block.ast.minijava.Element;
+import fr.n7.stl.block.ast.minijava.subelement.AttributeDefinition;
+import fr.n7.stl.block.ast.minijava.subelement.ClassElement;
+import fr.n7.stl.block.ast.minijava.subelement.ConstructorDefinition;
+import fr.n7.stl.block.ast.minijava.subelement.MethodDefinition;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.Scope;
 import fr.n7.stl.block.ast.type.AtomicType;
@@ -53,5 +58,19 @@ public class Helper {
         }
 
         return code;
+    }
+
+    public static String formatQualifiedName(Element element, ClassElement classElement) {
+        if (classElement instanceof AttributeDefinition) {
+            return classElement.getRealName();
+        }
+        if (classElement instanceof MethodDefinition) {
+            return element.getName() + "#" + classElement.getRealName();
+        }
+        if (classElement instanceof ConstructorDefinition) {
+            return element.getName() + "#constructor#";
+        }
+
+        return classElement.getRealName();
     }
 }

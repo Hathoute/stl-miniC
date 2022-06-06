@@ -28,6 +28,11 @@ import fr.n7.stl.block.ast.minijava.subelement.*;
 import fr.n7.stl.block.ast.type.minijava.*;
 import fr.n7.stl.block.ast.instruction.minijava.*;
 import fr.n7.stl.block.ast.expression.minijava.*;
+import fr.n7.stl.tam.ast.Register;
+import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.tam.ast.impl.TAMFactoryImpl;
+import java.io.PrintWriter;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import java_cup.runtime.XMLElement;
 
@@ -757,14 +762,31 @@ class CUP$Parser$actions {
                         System.out.println("Attempting to checkType");
                         elements.forEach(x -> ok[0] = x.checkType() && ok[0]);
                         if(ok[0]) {
-                          System.out.println("CheckType succeeded.");
+                            System.out.println("CheckType succeeded.");
+                            System.out.println("Allocating memory");
+                            Register r = Register.SB;
+                            int[] offset = new int[1];
+                            elements.forEach(x -> offset[0] += x.allocateMemory(r, offset[0]));
+                            System.out.println("Memory allocated.");
+
+                            System.out.println("Generation code");
+                            TAMFactory factory = new TAMFactoryImpl();
+                            Fragment code = factory.createFragment();
+                            code.add(factory.createCall("entry", Register.LB));
+                            code.add(factory.createHalt());
+                            elements.forEach(x -> code.append(x.getCode(factory)));
+
+                            System.out.println("Writing to output.tam");
+                            PrintWriter writer = new PrintWriter("output.tam", "UTF-8");
+                            writer.write(code.toString());
+                            writer.close();
                         }
                         else {
-                          System.out.println("Resolve failed");
+                          System.out.println("CheckType failed!");
                         }
                     }
                     else {
-                      System.out.println("Resolve failed");
+                      System.out.println("Resolve failed!");
                     }
                 }
                 else {
