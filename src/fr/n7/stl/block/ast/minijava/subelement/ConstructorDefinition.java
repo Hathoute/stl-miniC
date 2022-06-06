@@ -1,6 +1,7 @@
 package fr.n7.stl.block.ast.minijava.subelement;
 
 import fr.n7.stl.block.ast.Block;
+import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
@@ -25,6 +26,7 @@ public class ConstructorDefinition implements ClassElement {
 
     @Override
     public boolean collect(HierarchicalScope<Declaration> elementScope) {
+        Environment.getInstance().setCurrentClassElement(this);
         if(!elementScope.accepts(this)) {
             Logger.error("Duplicate constructor definition for \"" + name + "(" +
                     Helper.formatParameters(parameters) + ")\"");
@@ -32,17 +34,22 @@ public class ConstructorDefinition implements ClassElement {
         }
 
         elementScope.register(this);
+        Environment.getInstance().setCurrentClassElement(null);
         return true;
     }
 
     @Override
     public boolean resolve(HierarchicalScope<Declaration> elementScope) {
-        SymbolTable s = new SymbolTable(elementScope);
-        return Helper.startSequence(Helper.matchAll(parameters, x -> x.getType().resolve(s)))
+        Environment.getInstance().setCurrentClassElement(this);
+        SymbolTable<Declaration> s = new SymbolTable<>(elementScope);
+        boolean ok = Helper.startSequence(Helper.matchAll(parameters, x -> x.getType().resolve(s)))
                 .and(Helper.registerDeclarations(parameters, s))
                 .and(body.collect(s))
                 .and(body.resolve(s))
                 .finish();
+
+        Environment.getInstance().setCurrentClassElement(null);
+        return ok;
     }
 
     @Override

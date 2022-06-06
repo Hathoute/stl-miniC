@@ -1,6 +1,7 @@
 package fr.n7.stl.block.ast.minijava.subelement;
 
 import fr.n7.stl.block.ast.Block;
+import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.minijava.Element;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
@@ -48,6 +49,7 @@ public class MethodDefinition implements ClassElement {
 
     @Override
     public boolean resolve(HierarchicalScope<Declaration> elementScope) {
+        Environment.getInstance().setCurrentClassElement(this);
         boolean ok = Helper.startSequence(Helper.matchAll(signature.parameters, x -> x.getType().resolve(elementScope)))
                 .and(signature.type.resolve(elementScope))
                 .finish();
@@ -60,6 +62,7 @@ public class MethodDefinition implements ClassElement {
                 .and(body.resolve(s))
                 .finish();
 
+        Environment.getInstance().setCurrentClassElement(null);
         return ok;
     }
 

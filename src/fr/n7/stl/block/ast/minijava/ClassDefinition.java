@@ -1,9 +1,11 @@
 package fr.n7.stl.block.ast.minijava;
 
+import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.minijava.subelement.AttributeDefinition;
 import fr.n7.stl.block.ast.minijava.subelement.ClassElement;
 import fr.n7.stl.block.ast.minijava.subelement.ConstructorDefinition;
 import fr.n7.stl.block.ast.minijava.subelement.MethodDefinition;
+import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.Scope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
@@ -77,18 +79,26 @@ public class ClassDefinition implements Element {
 
     @Override
     public boolean collect(HierarchicalScope<Element> globalScope) {
+        Environment.getInstance().setCurrentClass(this);
+
         if(!globalScope.accepts(this)) {
             Logger.error("Duplicate definition of \"" + name + "\"");
             return false;
         }
-
         globalScope.register(this);
+
+        Environment.getInstance().setCurrentClass(null);
         return true;
     }
 
     @Override
     public boolean resolve(HierarchicalScope<Element> globalScope) {
-        SymbolTable s = new SymbolTable(globalScope);
-        return Helper.matchAll(classElements, x -> x.resolve(s));
+        Environment.getInstance().setCurrentClass(this);
+
+        SymbolTable<Declaration> s = new SymbolTable<>(globalScope);
+        boolean ok = Helper.matchAll(classElements, x -> x.resolve(s));
+
+        Environment.getInstance().setCurrentClass(null);
+        return ok;
     }
 }

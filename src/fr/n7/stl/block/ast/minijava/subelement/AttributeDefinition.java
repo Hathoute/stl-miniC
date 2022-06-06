@@ -1,5 +1,6 @@
 package fr.n7.stl.block.ast.minijava.subelement;
 
+import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.expression.Expression;
 import fr.n7.stl.block.ast.minijava.Element;
 import fr.n7.stl.block.ast.scope.Declaration;
@@ -45,25 +46,30 @@ public class AttributeDefinition implements ClassElement {
 
     @Override
     public boolean collect(HierarchicalScope<Declaration> elementScope) {
+        Environment.getInstance().setCurrentClassElement(this);
+
         if(!elementScope.accepts(this)) {
             Logger.error("Duplicate field definition for \"" + name + "\"");
             return false;
         }
 
         elementScope.register(this);
+        Environment.getInstance().setCurrentClassElement(null);
         return true;
     }
 
     @Override
     public boolean resolve(HierarchicalScope<Declaration> elementScope) {
-        boolean ok = type.resolve(elementScope);
+        Environment.getInstance().setCurrentClassElement(this);
 
+        boolean ok = type.resolve(elementScope);
         if(value != null) {
-            SymbolTable s = new SymbolTable(elementScope);
+            SymbolTable<Declaration> s = new SymbolTable<>(elementScope);
             ok = value.collectAndBackwardResolve(s) && ok;
             ok = value.fullResolve(s) && ok;
         }
 
+        Environment.getInstance().setCurrentClassElement(null);
         return ok;
     }
 }

@@ -1,6 +1,7 @@
 package fr.n7.stl.block.ast.minijava;
 
 import fr.n7.stl.block.ast.Block;
+import fr.n7.stl.block.ast.Environment;
 import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
@@ -28,7 +29,7 @@ public class MainClassDefinition implements Element {
 
     @Override
     public boolean resolve(HierarchicalScope<Element> globalScope) {
-        SymbolTable s = new SymbolTable(globalScope);
+        SymbolTable<Declaration> s = new SymbolTable<>(globalScope);
         return Helper.startSequence(Helper.matchAll(this.parameters, x -> x.getType().resolve(s)))
                 .and(this.body.collect(s))
                 .and(this.body.resolve(s))
