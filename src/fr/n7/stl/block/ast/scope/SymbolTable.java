@@ -12,17 +12,17 @@ import java.util.Map.Entry;
  * @author Marc Pantel
  *
  */
-public class SymbolTable implements HierarchicalScope<Declaration> {
+public class SymbolTable<T extends Declaration> implements HierarchicalScope<T> {
 	
-	private Map<String, Declaration> declarations;
-	private Scope<Declaration> context;
+	private Map<String, T> declarations;
+	private Scope<? extends T> context;
 
 	public SymbolTable() {
 		this( null );
 	}
 	
-	public SymbolTable(Scope<Declaration> _context) {
-		this.declarations = new HashMap<String,Declaration>();
+	public SymbolTable(Scope<? extends T> _context) {
+		this.declarations = new HashMap<String,T>();
 		this.context = _context;
 	}
 
@@ -30,7 +30,7 @@ public class SymbolTable implements HierarchicalScope<Declaration> {
 	 * @see fr.n7.stl.block.ast.scope.Scope#get(java.lang.String)
 	 */
 	@Override
-	public Declaration get(String _name) {
+	public T get(String _name) {
 		if (this.declarations.containsKey(_name)) {
 			return this.declarations.get(_name);
 		} else {
@@ -62,7 +62,7 @@ public class SymbolTable implements HierarchicalScope<Declaration> {
 	 * @see fr.n7.stl.block.ast.scope.Scope#register(fr.n7.stl.block.ast.scope.Declaration)
 	 */
 	@Override
-	public void register(Declaration _declaration) {
+	public void register(T _declaration) {
 		if (this.accepts(_declaration)) {
 			this.declarations.put(_declaration.getName(), _declaration);
 		} else {
@@ -100,7 +100,7 @@ public class SymbolTable implements HierarchicalScope<Declaration> {
 			_local += "Hierarchical definitions :\n" + this.context.toString();
 		}
 		_local += "Local definitions : ";
-		for (Entry<String,Declaration> _entry : this.declarations.entrySet()) {
+		for (Entry<String,T> _entry : this.declarations.entrySet()) {
 			_local += _entry.getKey() + " -> " + _entry.getValue().toString() + "\n";
 		}
 		return _local;
