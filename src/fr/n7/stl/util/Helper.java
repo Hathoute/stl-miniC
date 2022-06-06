@@ -1,8 +1,13 @@
 package fr.n7.stl.util;
 
+import fr.n7.stl.block.ast.Block;
+import fr.n7.stl.block.ast.instruction.CheckReturnCode;
+import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.Scope;
+import fr.n7.stl.block.ast.type.AtomicType;
+import fr.n7.stl.block.ast.type.Type;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,5 +44,14 @@ public class Helper {
 
     public static TruthSequence startSequence(boolean bool) {
         return new TruthSequence(bool);
+    }
+
+    public static CheckReturnCode checkReturnType(Block b, Type t) {
+        CheckReturnCode code = b.checkReturnType(t);
+        if(t == AtomicType.VoidType && code == CheckReturnCode.CONTINUE) {
+            return CheckReturnCode.FINISHED;
+        }
+
+        return code;
     }
 }

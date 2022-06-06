@@ -17,6 +17,7 @@ import fr.n7.stl.util.Helper;
 import fr.n7.stl.util.Logger;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MethodCall implements AssignableExpression, Instruction {
 
@@ -60,7 +61,14 @@ public class MethodCall implements AssignableExpression, Instruction {
     @Override
     public Type getType() {
         Type objectType = object.getType();
+        List<Type> parameterTypes = parameters.stream().map(Expression::getType).collect(Collectors.toList());
         if(objectType instanceof MethodType) {
+            MethodType mt = (MethodType) objectType;
+            if(!mt.compatibleWithParameters(parameterTypes)) {
+                Logger.error("No overload existing for method '" + mt.getDefinition().getName() + "'" +
+                        " that takes parameters: " + Helper.formatParameters(parameterTypes));
+                return AtomicType.ErrorType;
+            }
             return ((MethodType) objectType).getReturnType();
         }
 

@@ -77,7 +77,7 @@ public class MethodDefinition implements ClassElement {
         Environment.getInstance().setCurrentClassElement(this);
 
         boolean ok = body.checkType();
-        ok = body.checkReturnType(signature.getType()) == CheckReturnCode.FINISHED && ok;
+        ok = Helper.checkReturnType(body, signature.getType()) == CheckReturnCode.FINISHED && ok;
 
         Environment.getInstance().setCurrentClassElement(null);
         return ok;
