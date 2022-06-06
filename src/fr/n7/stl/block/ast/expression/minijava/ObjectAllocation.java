@@ -39,12 +39,12 @@ public class ObjectAllocation implements Expression {
 
     @Override
     public Type getType() {
-        throw new RuntimeException("Method is not defined");
+        return type;
     }
 
     @Override
     public boolean isConstant() {
-        throw new RuntimeException("Method is not defined");
+        return false;
     }
 
     @Override

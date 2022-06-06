@@ -72,4 +72,17 @@ public class AttributeDefinition implements ClassElement {
         Environment.getInstance().setCurrentClassElement(null);
         return ok;
     }
+
+    @Override
+    public boolean checkType() {
+        Environment.getInstance().setCurrentClassElement(this);
+
+        boolean ok = true;
+        if(value != null) {
+            ok = value.getType().compatibleWith(type);
+        }
+
+        Environment.getInstance().setCurrentClassElement(null);
+        return ok;
+    }
 }

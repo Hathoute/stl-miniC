@@ -9,5 +9,6 @@ public interface ClassElement extends Declaration {
 
     boolean collect(HierarchicalScope<Declaration> elementScope);
     boolean resolve(HierarchicalScope<Declaration> elementScope);
+    boolean checkType();
 
 }

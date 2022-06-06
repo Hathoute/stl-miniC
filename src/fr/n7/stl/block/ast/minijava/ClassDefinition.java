@@ -101,4 +101,14 @@ public class ClassDefinition implements Element {
         Environment.getInstance().setCurrentClass(null);
         return ok;
     }
+
+    @Override
+    public boolean checkType() {
+        Environment.getInstance().setCurrentClass(this);
+
+        boolean ok = Helper.matchAll(classElements, ClassElement::checkType);
+
+        Environment.getInstance().setCurrentClass(null);
+        return ok;
+    }
 }

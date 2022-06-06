@@ -2,10 +2,12 @@ package fr.n7.stl.block.ast.minijava.subelement;
 
 import fr.n7.stl.block.ast.Block;
 import fr.n7.stl.block.ast.Environment;
+import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.util.Helper;
 import fr.n7.stl.util.Logger;
@@ -41,12 +43,24 @@ public class ConstructorDefinition implements ClassElement {
     @Override
     public boolean resolve(HierarchicalScope<Declaration> elementScope) {
         Environment.getInstance().setCurrentClassElement(this);
+
         SymbolTable<Declaration> s = new SymbolTable<>(elementScope);
         boolean ok = Helper.startSequence(Helper.matchAll(parameters, x -> x.getType().resolve(s)))
                 .and(Helper.registerDeclarations(parameters, s))
                 .and(body.collect(s))
                 .and(body.resolve(s))
                 .finish();
+
+        Environment.getInstance().setCurrentClassElement(null);
+        return ok;
+    }
+
+    @Override
+    public boolean checkType() {
+        Environment.getInstance().setCurrentClassElement(this);
+
+        boolean ok = body.checkType();
+        ok = body.checkReturnType(AtomicType.VoidType) != CheckReturnCode.TYPE_MISMATCH && ok;
 
         Environment.getInstance().setCurrentClassElement(null);
         return ok;

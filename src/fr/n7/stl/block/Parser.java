@@ -753,7 +753,15 @@ class CUP$Parser$actions {
                     System.out.println("Attempting to resolve");
                     elements.forEach(x -> ok[0] = x.resolve(globalScope) && ok[0]);
                     if(ok[0]) {
-                      System.out.println("Resolve succeeded.");
+                        System.out.println("Resolve succeeded.");
+                        System.out.println("Attempting to checkType");
+                        elements.forEach(x -> ok[0] = x.checkType() && ok[0]);
+                        if(ok[0]) {
+                          System.out.println("CheckType succeeded.");
+                        }
+                        else {
+                          System.out.println("Resolve failed");
+                        }
                     }
                     else {
                       System.out.println("Resolve failed");
@@ -1908,7 +1916,7 @@ class CUP$Parser$actions {
 		Expression expression = (Expression)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		//@@CUPDBG76
 
-					RESULT = new Return( expression);
+					RESULT = new MethodReturn( expression);
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Instruction",3, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2069,7 +2077,7 @@ class CUP$Parser$actions {
 		String etiquette = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		//@@CUPDBG86
 
-					RESULT = new FieldAssignment( enregistrement, etiquette);
+					RESULT = new ObjectFieldAssignment( enregistrement, etiquette);
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Affectable",15, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2402,7 +2410,7 @@ class CUP$Parser$actions {
 		String etiquette = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		//@@CUPDBG105
 
-					RESULT = new FieldAccess( expression, etiquette );
+					RESULT = new ObjectFieldAccess( expression, etiquette );
 				
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Expression",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }

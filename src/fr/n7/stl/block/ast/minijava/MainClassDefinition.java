@@ -2,11 +2,13 @@ package fr.n7.stl.block.ast.minijava;
 
 import fr.n7.stl.block.ast.Block;
 import fr.n7.stl.block.ast.Environment;
+import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.scope.Scope;
 import fr.n7.stl.block.ast.scope.SymbolTable;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.util.Helper;
 
@@ -31,8 +33,16 @@ public class MainClassDefinition implements Element {
     public boolean resolve(HierarchicalScope<Element> globalScope) {
         SymbolTable<Declaration> s = new SymbolTable<>(globalScope);
         return Helper.startSequence(Helper.matchAll(this.parameters, x -> x.getType().resolve(s)))
+                .and(Helper.registerDeclarations(this.parameters, s))
                 .and(this.body.collect(s))
                 .and(this.body.resolve(s))
+                .finish();
+    }
+
+    @Override
+    public boolean checkType() {
+        return Helper.startSequence(body.checkType())
+                .and(body.checkReturnType(AtomicType.VoidType) != CheckReturnCode.TYPE_MISMATCH)
                 .finish();
     }
 

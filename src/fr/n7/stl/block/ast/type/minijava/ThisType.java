@@ -1,17 +1,16 @@
 package fr.n7.stl.block.ast.type.minijava;
 
-import fr.n7.stl.block.ast.minijava.subelement.MethodDefinition;
+import fr.n7.stl.block.ast.Environment;
+import fr.n7.stl.block.ast.minijava.ClassDefinition;
+import fr.n7.stl.block.ast.minijava.Element;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
 import fr.n7.stl.block.ast.type.Type;
 
-public class MethodType implements Type {
+public class ThisType implements Type {
 
-    protected MethodDefinition definition;
-
-    public MethodType(MethodDefinition definition) {
-        this.definition = definition;
-    }
+    protected ClassDefinition definition;
+    protected InstanceType instanceType;
 
     @Override
     public boolean equalsTo(Type _other) {
@@ -35,10 +34,12 @@ public class MethodType implements Type {
 
     @Override
     public boolean resolve(HierarchicalScope<Declaration> _scope) {
-        return true;
+        definition = Environment.getInstance().getCurrentClass();
+        instanceType = new InstanceType(definition.getName());
+        return instanceType.resolve(_scope);
     }
 
-    public Type getReturnType() {
-        return this.definition.getSignature().getType();
+    public InstanceType getInstanceType() {
+        return instanceType;
     }
 }

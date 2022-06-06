@@ -8,5 +8,6 @@ public interface Element extends Declaration {
 
     boolean collect(HierarchicalScope<Element> globalScope);
     boolean resolve(HierarchicalScope<Element> globalScope);
+    boolean checkType();
 
 }

@@ -5,6 +5,7 @@ import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -35,7 +36,7 @@ public class ExpressionWrapper implements Instruction {
 
     @Override
     public boolean checkType() {
-        throw new RuntimeException("Method is not defined");
+        return expression.getType() != AtomicType.ErrorType;
     }
 
     @Override
@@ -51,6 +52,6 @@ public class ExpressionWrapper implements Instruction {
 
     @Override
     public CheckReturnCode checkReturnType(Type type) {
-        throw new RuntimeException("Method is not defined");
+        return CheckReturnCode.CONTINUE;
     }
 }

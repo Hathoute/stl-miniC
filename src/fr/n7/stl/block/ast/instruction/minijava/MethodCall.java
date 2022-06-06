@@ -6,11 +6,15 @@ import fr.n7.stl.block.ast.instruction.CheckReturnCode;
 import fr.n7.stl.block.ast.instruction.Instruction;
 import fr.n7.stl.block.ast.scope.Declaration;
 import fr.n7.stl.block.ast.scope.HierarchicalScope;
+import fr.n7.stl.block.ast.type.AtomicType;
 import fr.n7.stl.block.ast.type.Type;
+import fr.n7.stl.block.ast.type.minijava.MethodType;
+import fr.n7.stl.block.ast.type.minijava.ThisType;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Helper;
+import fr.n7.stl.util.Logger;
 
 import java.util.List;
 
@@ -55,7 +59,13 @@ public class MethodCall implements AssignableExpression, Instruction {
 
     @Override
     public Type getType() {
-        throw new RuntimeException("Method is not defined");
+        Type objectType = object.getType();
+        if(objectType instanceof MethodType) {
+            return ((MethodType) objectType).getReturnType();
+        }
+
+        Logger.error("Attempting to invoke a non-invokable expression \"" + this.object + "\"");
+        return AtomicType.ErrorType;
     }
 
     @Override
